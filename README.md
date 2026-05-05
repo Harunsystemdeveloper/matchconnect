@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MatchConnect – AI-driven jobbmatchning
 
-## Getting Started
+AI-driven plattform som matchar jobbsökare med rekryterare på den svenska arbetsmarknaden.
 
-First, run the development server:
+**Tech Stack:** Next.js 16 · TypeScript · Tailwind CSS · shadcn/ui · Supabase · Anthropic Claude API
+
+---
+
+## Lokal utveckling
+
+### 1. Förutsättningar
+- Node.js 20+, npm 10+
+- Supabase-konto (supabase.com)
+- Anthropic API-nyckel (console.anthropic.com)
+
+### 2. Installera
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd matchconnect
+npm install
+cp .env.example .env.local   # Fyll i värdena
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Supabase-setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**a) SQL-migration** – Kör `supabase/migrations/001_initial.sql` i Supabase Dashboard → SQL Editor
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**b) Storage Buckets** – Skapa i Supabase Dashboard → Storage:
 
-## Learn More
+| Namn | Publik |
+|------|--------|
+| `avatars` | Ja |
+| `logos` | Ja |
+| `cvs` | Nej |
 
-To learn more about Next.js, take a look at the following resources:
+**c) Realtime** – Aktivera `messages` + `conversations` i Database → Replication
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**d) Google OAuth (valfritt)** – Authentication → Providers → Google
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 4. Starta
 
-## Deploy on Vercel
+```bash
+npm run dev   # http://localhost:3000
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy till Vercel
+
+```bash
+npm i -g vercel && vercel login && vercel --prod
+```
+
+Lägg till miljövariabler i Vercel Dashboard. Uppdatera Supabase Redirect URLs:
+- Site URL: `https://din-app.vercel.app`
+- Redirect URL: `https://din-app.vercel.app/api/auth/callback`
+
+---
+
+## AI-routes
+
+| Route | Funktion |
+|-------|----------|
+| `POST /api/ai/analyze-cv` | CV-analys med Claude – extraherar skills, erfarenhet, utbildning |
+| `POST /api/ai/match-candidates` | Rankar jobbsökare mot annons (0–100%) |
+| `POST /api/ai/skill-gaps` | Kompetensgap-analys per jobb |
+| `POST /api/ai/interview-questions` | 6–8 personaliserade intervjufrågor |
+
+---
+
+## Kommandon
+
+```bash
+npm run dev          # Dev-server
+npm run build        # Produktionsbygge
+npm run lint         # ESLint
+npx shadcn@latest add <component>   # Lägg till UI-komponent
+```
