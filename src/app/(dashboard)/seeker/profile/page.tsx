@@ -15,7 +15,7 @@ export default async function SeekerProfilePage() {
     supabase.from('cv_profiles').select('*').eq('seeker_id', user.id).single(),
   ])
 
-  if (!profile) redirect('/login')
+  if (!profile) redirect('/onboarding')
 
   return <SeekerProfileClient profile={profile} cvProfile={cvProfile} />
 }

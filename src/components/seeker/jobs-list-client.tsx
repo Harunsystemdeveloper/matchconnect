@@ -174,8 +174,17 @@ export function JobsListClient({ jobs: initialJobs, userId }: { jobs: Job[]; use
       {sorted.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground">
           <Briefcase className="h-12 w-12 mx-auto mb-3 opacity-30" />
-          <p className="font-medium">Inga jobb matchar din sökning</p>
-          <p className="text-sm mt-1">Prova att ändra filter</p>
+          {jobs.length === 0 ? (
+            <>
+              <p className="font-medium">Inga aktiva annonser just nu</p>
+              <p className="text-sm mt-1">Kom tillbaka snart — nya jobb publiceras dagligen</p>
+            </>
+          ) : (
+            <>
+              <p className="font-medium">Inga jobb matchar din sökning</p>
+              <p className="text-sm mt-1">Prova att ändra filter</p>
+            </>
+          )}
         </div>
       ) : (
         <div className="grid gap-4">

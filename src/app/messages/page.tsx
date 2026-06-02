@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { MessagesClient } from '@/components/messages/messages-client'
 import { Navbar } from '@/components/navbar'
 import type { Metadata } from 'next'
+import type { ConversationPreview } from '@/components/messages/messages-client'
 
 export const metadata: Metadata = { title: 'Meddelanden' }
 
@@ -17,7 +18,7 @@ export default async function MessagesPage({
   if (!user) redirect('/login')
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-  if (!profile) redirect('/login')
+  if (!profile) redirect('/onboarding')
 
   // If targetUserId provided, ensure conversation exists
   if (targetUserId) {
@@ -45,8 +46,7 @@ export default async function MessagesPage({
       <div className="flex-1 flex overflow-hidden min-h-0">
         <MessagesClient
           currentUser={profile}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          conversations={(conversations ?? []) as any}
+          conversations={(conversations ?? []) as ConversationPreview[]}
           initialConversationId={targetUserId ? undefined : undefined}
         />
       </div>

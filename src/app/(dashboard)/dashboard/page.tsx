@@ -18,7 +18,7 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
-  if (!profile) redirect('/login')
+  if (!profile) redirect('/onboarding')
 
   if (profile.user_type === 'recruiter') {
     return (

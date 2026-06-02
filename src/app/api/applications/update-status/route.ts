@@ -17,6 +17,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Ogiltigt status' }, { status: 400 })
   }
 
+  // Verify the user is the recruiter who owns the job for this application
+  const { data: app } = await supabase
+    .from('applications')
+    .select('job:jobs(recruiter_id)')
+    .eq('id', application_id)
+    .single()
+
+  const job = Array.isArray(app?.job) ? app.job[0] : app?.job
+  if (!job || (job as { recruiter_id: string }).recruiter_id !== user.id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   const { error } = await supabase
     .from('applications')
     .update({ status, updated_at: new Date().toISOString() })

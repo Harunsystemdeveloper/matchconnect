@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import type { Profile } from '@/types/database'
 
-interface ConversationPreview {
+export interface ConversationPreview {
   id: string
   last_message_at: string | null
   recruiter: { id: string; full_name: string | null; avatar_url: string | null; headline: string | null } | null

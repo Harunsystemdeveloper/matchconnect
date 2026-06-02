@@ -1,8 +1,13 @@
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import { LoginForm } from '@/components/auth/login-form'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Logga in' }
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) redirect('/dashboard')
   return <LoginForm />
 }

@@ -447,7 +447,7 @@ export default function HomePage() {
             <h2 className="text-2xl sm:text-3xl font-bold">Allt du behöver veta</h2>
             <p className="text-muted-foreground mt-3">Klicka på en fråga för att se svaret.</p>
           </div>
-          <Accordion openMultiple={false} className="space-y-3">
+          <Accordion className="space-y-3">
             {[
               {
                 id: 'faq-1',
