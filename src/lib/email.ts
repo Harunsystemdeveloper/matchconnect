@@ -100,6 +100,41 @@ export async function sendStatusUpdateEmail({
   })
 }
 
+export async function sendWelcomeEmail({
+  email,
+  name,
+  userType,
+}: {
+  email: string
+  name: string
+  userType: 'job_seeker' | 'recruiter'
+}) {
+  const isSeeker = userType === 'job_seeker'
+  const dashboardUrl = `${BASE_URL}/dashboard`
+
+  await send({
+    from: FROM,
+    to: email,
+    subject: 'Välkommen till MatchConnect!',
+    html: `
+      <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#111">
+        <h2 style="margin-bottom:8px">Välkommen, ${name}! 🎉</h2>
+        <p>Ditt konto är nu aktivt. ${isSeeker
+          ? 'Du kan nu ladda upp ditt CV och börja matcha mot hundratals jobb med hjälp av AI.'
+          : 'Du kan nu publicera jobbannonser och låta AI rangordna kandidaterna åt dig.'
+        }</p>
+        <p>
+          <a href="${dashboardUrl}"
+             style="display:inline-block;background:#6d28d9;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600">
+            Gå till din dashboard
+          </a>
+        </p>
+        <p style="color:#666;font-size:13px">MatchConnect · AI-driven jobbmatchning för den svenska arbetsmarknaden</p>
+      </div>
+    `,
+  })
+}
+
 export async function sendNewMessageEmail({
   recipientEmail,
   recipientName,
