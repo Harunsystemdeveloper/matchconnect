@@ -261,7 +261,7 @@ export function TalentPoolClient({
           {filtered.map(c => {
             const seeker = Array.isArray(c.seeker) ? c.seeker[0] : c.seeker
             if (!seeker) return null
-            const initials = seeker.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) ?? '?'
+            const initials = seeker.full_name?.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) ?? '?'
             const skillsToShow = (c.skills ?? []).slice(0, 6)
             const extraSkills = (c.skills ?? []).length - skillsToShow.length
             const jobSkills = selectedJob?.skills_required ?? []

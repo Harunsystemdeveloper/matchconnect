@@ -57,10 +57,6 @@ const features = [
   },
 ]
 
-const logos = [
-  'Spotify', 'Klarna', 'King', 'Voi', 'Epidemic Sound',
-  'Northvolt', 'Einride', 'Bambuser', 'Kry', 'AFRY',
-]
 
 const testimonials = [
   {
@@ -101,130 +97,151 @@ export default function HomePage() {
       <Navbar />
 
       {/* ── Hero ── */}
-      <section className="relative flex flex-col items-center justify-center text-center px-6 pt-24 pb-28 overflow-hidden">
+      <section className="relative min-h-[90vh] flex items-center px-6 pt-24 pb-16 overflow-hidden">
         <div className="absolute inset-0 -z-10 hero-mesh" />
         <div className="absolute inset-0 -z-20 dot-grid opacity-40" />
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-96 w-96 rounded-full bg-primary/8 blur-3xl -z-10 pointer-events-none" />
+        <div className="absolute -top-32 left-1/4 h-96 w-96 rounded-full bg-primary/8 blur-3xl -z-10 pointer-events-none" />
 
-        <Badge variant="secondary" className="mb-6 gap-1.5 px-4 py-1.5 text-xs font-medium border border-primary/20 bg-primary/5 text-primary animate-in fade-in slide-in-from-bottom-2 duration-500">
-          <Sparkles className="h-3 w-3" />
-          AI-driven rekrytering · Byggt för den svenska arbetsmarknaden
-        </Badge>
+        <div className="mx-auto max-w-6xl w-full">
+          <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 lg:gap-16 items-center">
 
-        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight max-w-3xl leading-[1.05] animate-in fade-in slide-in-from-bottom-3 duration-700 delay-100">
-          Rätt jobb.{' '}
-          <span className="gradient-text">Rätt person.</span>
-          {' '}Varje gång.
-        </h1>
+            {/* Left: Text */}
+            <div className="flex flex-col items-start animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <Badge variant="secondary" className="mb-6 gap-1.5 px-4 py-1.5 text-xs font-medium border border-primary/20 bg-primary/5 text-primary">
+                <Sparkles className="h-3 w-3" />
+                AI-driven rekrytering · Byggt för den svenska arbetsmarknaden
+              </Badge>
 
-        <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed animate-in fade-in slide-in-from-bottom-3 duration-700 delay-200">
-          Sverige har ett unikt problem: tusentals akademiker utan jobb — samtidigt som
-          180 000 tjänster inte kan tillsättas. Det är inte ett kompetensproblem.
-          Det är ett <strong className="text-foreground">matchningsproblem</strong>. Vi löser det.
-        </p>
+              <h1 className="text-5xl sm:text-6xl font-bold tracking-tight leading-[1.05] mb-6">
+                Kompetensen finns.{' '}
+                <span className="gradient-text">Matchningen</span>
+                {' '}är trasig.
+              </h1>
 
-        <div className="mt-10 flex flex-col sm:flex-row gap-3 animate-in fade-in slide-in-from-bottom-3 duration-700 delay-300">
-          <Button size="lg" asChild className="text-base px-8 h-12 shadow-lg shadow-primary/30 glow-primary">
-            <Link href="/register">
-              Kom igång gratis
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-          <Button size="lg" variant="outline" asChild className="text-base px-8 h-12">
-            <Link href="#problemet">
-              Se problemet i siffror
-            </Link>
-          </Button>
-        </div>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
+                <strong className="text-foreground">73% av svenska arbetsgivare</strong> hittar inte rätt kompetens — dubbelt så många som för tio år sedan.
+                Samtidigt tjänar <strong className="text-foreground">var fjärde nyexaminerad akademiker</strong> under studiemedelsnivån månader efter sin examen.{' '}
+                Det är inte ett kompetensproblem. Det är ett <strong className="text-foreground">matchningsproblem</strong> — och vi löser det med AI.
+              </p>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground animate-in fade-in duration-700 delay-500">
-          {['Gratis att börja', 'Inget kreditkort krävs', 'GDPR-säkert'].map((item) => (
-            <span key={item} className="flex items-center gap-1.5">
-              <CheckCircle className="h-3.5 w-3.5 text-primary" />
-              {item}
-            </span>
-          ))}
-        </div>
-
-        {/* Floating avatars */}
-        <div className="mt-10 flex items-center gap-3 animate-in fade-in duration-700 delay-400">
-          <div className="flex -space-x-2.5">
-            {[
-              'https://randomuser.me/api/portraits/women/44.jpg',
-              'https://randomuser.me/api/portraits/men/32.jpg',
-              'https://randomuser.me/api/portraits/women/68.jpg',
-              'https://randomuser.me/api/portraits/men/75.jpg',
-              'https://randomuser.me/api/portraits/women/12.jpg',
-            ].map((src, i) => (
-              <img
-                key={i}
-                src={src}
-                alt=""
-                className="h-9 w-9 rounded-full object-cover ring-2 ring-background"
-                style={{ zIndex: 5 - i }}
-              />
-            ))}
-          </div>
-          <div className="text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">2 400+</span> jobbsökare och rekryterare har redan gått med
-          </div>
-        </div>
-
-        {/* Mock browser */}
-        <div className="mt-10 w-full max-w-2xl relative animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500 float-animation">
-          <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-primary/20 via-violet-500/20 to-primary/20 blur-sm" />
-          <div className="relative rounded-2xl border border-border/60 bg-card/90 backdrop-blur-sm shadow-2xl shadow-primary/10 overflow-hidden">
-            <div className="border-b border-border/60 px-5 py-3 flex items-center gap-2 bg-muted/30">
-              <div className="flex gap-1.5">
-                <div className="h-3 w-3 rounded-full bg-red-400/80" />
-                <div className="h-3 w-3 rounded-full bg-yellow-400/80" />
-                <div className="h-3 w-3 rounded-full bg-green-400/80" />
+              <div className="flex flex-col sm:flex-row gap-3 mb-8">
+                <Button size="lg" asChild className="text-base px-8 h-12 shadow-lg shadow-primary/30 glow-primary">
+                  <Link href="/register">
+                    Kom igång gratis
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild className="text-base px-8 h-12">
+                  <Link href="#problemet">
+                    Se problemet i siffror
+                  </Link>
+                </Button>
               </div>
-              <div className="flex-1 mx-4 h-6 rounded-md bg-muted/60 flex items-center px-3">
-                <span className="text-xs text-muted-foreground">matchconnect.se/seeker/jobs</span>
+
+              <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground mb-8">
+                {['Gratis att börja', 'Inget kreditkort krävs', 'GDPR-säkert'].map((item) => (
+                  <span key={item} className="flex items-center gap-1.5">
+                    <CheckCircle className="h-3.5 w-3.5 text-primary" />
+                    {item}
+                  </span>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-2.5">
+                  {[
+                    'https://randomuser.me/api/portraits/women/44.jpg',
+                    'https://randomuser.me/api/portraits/men/32.jpg',
+                    'https://randomuser.me/api/portraits/women/68.jpg',
+                    'https://randomuser.me/api/portraits/men/75.jpg',
+                    'https://randomuser.me/api/portraits/women/12.jpg',
+                  ].map((src, i) => (
+                    <img key={i} src={src} alt="" className="h-9 w-9 rounded-full object-cover ring-2 ring-background" style={{ zIndex: 5 - i }} />
+                  ))}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  <span className="font-semibold text-foreground">2 400+</span> jobbsökare och rekryterare har redan gått med
+                </div>
               </div>
             </div>
-            <div className="p-5 grid sm:grid-cols-3 gap-3">
-              {[
-                { role: 'Senior React Developer', co: 'Spotify AB', score: 94, color: 'text-emerald-500', bar: 'bg-emerald-500' },
-                { role: 'Frontend Engineer', co: 'Klarna', score: 87, color: 'text-blue-500', bar: 'bg-blue-500' },
-                { role: 'UI/UX Developer', co: 'IKEA Digital', score: 79, color: 'text-violet-500', bar: 'bg-violet-500' },
-              ].map((job) => (
-                <div key={job.role} className="rounded-xl border border-border/60 bg-background/70 p-4 text-left hover:border-border transition-colors">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="h-8 w-8 rounded-lg gradient-primary flex items-center justify-center">
-                      <Brain className="h-4 w-4 text-white" />
-                    </div>
-                    <span className={`text-lg font-bold ${job.color}`}>{job.score}%</span>
+
+            {/* Right: Image + product demo */}
+            <div className="relative hidden lg:flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+
+              {/* Office photo with floating stat cards */}
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-primary/10 aspect-[16/9]">
+                <img
+                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=900&q=85"
+                  alt="Team på modernt kontor"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/70" />
+
+                {/* Floating: kompetensbrist */}
+                <div className="absolute top-4 left-4 rounded-2xl border border-white/20 bg-background/90 backdrop-blur-md p-3 shadow-xl">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Kompetensbrist</span>
                   </div>
-                  <p className="text-sm font-medium leading-snug">{job.role}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5 mb-3">{job.co}</p>
-                  <div className="h-1 rounded-full bg-border overflow-hidden">
-                    <div className={`h-full rounded-full ${job.bar}`} style={{ width: `${job.score}%` }} />
+                  <p className="text-2xl font-black text-red-500 leading-none">73%</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">av svenska företag · ManpowerGroup 2026</p>
+                </div>
+
+                {/* Floating: nyexaminerade */}
+                <div className="absolute top-4 right-4 rounded-2xl border border-white/20 bg-background/90 backdrop-blur-md p-3 shadow-xl">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Nyexaminerade</span>
+                  </div>
+                  <p className="text-2xl font-black text-amber-500 leading-none">1 av 4</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">under studiemedelsnivån · Saco 2025</p>
+                </div>
+              </div>
+
+              {/* Product demo — mock browser */}
+              <div className="relative float-animation">
+                <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-primary/20 via-violet-500/20 to-primary/20 blur-sm" />
+                <div className="relative rounded-2xl border border-border/60 bg-card/90 backdrop-blur-sm shadow-2xl shadow-primary/10 overflow-hidden">
+                  <div className="border-b border-border/60 px-4 py-2.5 flex items-center gap-2 bg-muted/30">
+                    <div className="flex gap-1.5">
+                      <div className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
+                      <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/80" />
+                      <div className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
+                    </div>
+                    <div className="flex-1 mx-3 h-5 rounded-md bg-muted/60 flex items-center px-3">
+                      <span className="text-[10px] text-muted-foreground">matchconnect.se/seeker/jobs</span>
+                    </div>
+                  </div>
+                  <div className="p-4 grid grid-cols-3 gap-2.5">
+                    {[
+                      { role: 'Senior React Dev', co: 'Tech-startup', score: 94, color: 'text-emerald-500', bar: 'bg-emerald-500' },
+                      { role: 'Frontend Engineer', co: 'SaaS-bolag', score: 87, color: 'text-blue-500', bar: 'bg-blue-500' },
+                      { role: 'UI/UX Developer', co: 'E-handel', score: 79, color: 'text-violet-500', bar: 'bg-violet-500' },
+                    ].map((job) => (
+                      <div key={job.role} className="rounded-xl border border-border/60 bg-background/70 p-3 text-left">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="h-7 w-7 rounded-lg gradient-primary flex items-center justify-center">
+                            <Brain className="h-3.5 w-3.5 text-white" />
+                          </div>
+                          <span className={`text-base font-bold ${job.color}`}>{job.score}%</span>
+                        </div>
+                        <p className="text-xs font-medium leading-snug">{job.role}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5 mb-2">{job.co}</p>
+                        <div className="h-1 rounded-full bg-border overflow-hidden">
+                          <div className={`h-full rounded-full ${job.bar}`} style={{ width: `${job.score}%` }} />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
+              </div>
+
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Trusted by ── */}
-      <section className="py-10 px-6 border-b border-border/40">
-        <div className="mx-auto max-w-5xl">
-          <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground/60 mb-7">
-            Kandidater matchade till Sveriges ledande bolag
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
-            {logos.map((logo) => (
-              <span key={logo} className="text-sm font-semibold text-muted-foreground/50 hover:text-muted-foreground transition-colors tracking-wide">
-                {logo}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ── Ticker tape ── */}
       <div className="border-y border-border/50 bg-muted/30 py-3 overflow-hidden relative">
@@ -232,25 +249,25 @@ export default function HomePage() {
         <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
         <div className="ticker-track text-xs font-medium text-muted-foreground select-none">
           {[
-            { label: 'Kompetensbrist', value: '74%', up: true },
-            { label: 'Akademikerarbetslöshet', value: '8,2%', up: true },
-            { label: 'Obemannade tjänster', value: '180 000', up: true },
-            { label: 'Förlorad produktion', value: '45 mdr SEK', up: true },
-            { label: 'Rekryteringstid', value: '6,2 mån', up: true },
-            { label: 'Misslyckade rekryteringar', value: '42%', up: true },
-            { label: 'Matchning med AI', value: '2× snabbare', up: false },
-            { label: 'Time-to-hire', value: '−60%', up: false },
-            { label: 'Rekryterar-nöjdhet', value: '87%', up: false },
+            { label: 'Företag med kompetensbrist', value: '73%', up: true },
+            { label: 'Nyexaminerade under studiemedelsnivån', value: '1 av 4', up: true },
+            { label: 'Arbetsgivare med rekryteringssvårigheter', value: '49%', up: true },
+            { label: 'Rekryteringar som misslyckas', value: '25%', up: true },
+            { label: 'Företag drabbade negativt', value: '90%', up: true },
+            { label: 'Expansioner som uteblir', value: '33%', up: true },
+            { label: 'Nyexaminerade utan a-kassa', value: '7 av 8', up: true },
+            { label: 'Ser inga resultat av arbetsmarknadspolitiken', value: '60%', up: true },
+            { label: 'Kompetensbrist dubbelt mot för 10 år sedan', value: '2×', up: true },
             // Duplicate for seamless loop
-            { label: 'Kompetensbrist', value: '74%', up: true },
-            { label: 'Akademikerarbetslöshet', value: '8,2%', up: true },
-            { label: 'Obemannade tjänster', value: '180 000', up: true },
-            { label: 'Förlorad produktion', value: '45 mdr SEK', up: true },
-            { label: 'Rekryteringstid', value: '6,2 mån', up: true },
-            { label: 'Misslyckade rekryteringar', value: '42%', up: true },
-            { label: 'Matchning med AI', value: '2× snabbare', up: false },
-            { label: 'Time-to-hire', value: '−60%', up: false },
-            { label: 'Rekryterar-nöjdhet', value: '87%', up: false },
+            { label: 'Företag med kompetensbrist', value: '73%', up: true },
+            { label: 'Nyexaminerade under studiemedelsnivån', value: '1 av 4', up: true },
+            { label: 'Arbetsgivare med rekryteringssvårigheter', value: '49%', up: true },
+            { label: 'Rekryteringar som misslyckas', value: '25%', up: true },
+            { label: 'Företag drabbade negativt', value: '90%', up: true },
+            { label: 'Expansioner som uteblir', value: '33%', up: true },
+            { label: 'Nyexaminerade utan a-kassa', value: '7 av 8', up: true },
+            { label: 'Ser inga resultat av arbetsmarknadspolitiken', value: '60%', up: true },
+            { label: 'Kompetensbrist dubbelt mot för 10 år sedan', value: '2×', up: true },
           ].map((item, i) => (
             <span key={i} className="flex items-center gap-2 whitespace-nowrap">
               <span className={`font-bold ${item.up ? 'text-red-500' : 'text-emerald-500'}`}>
@@ -292,11 +309,11 @@ export default function HomePage() {
               </div>
               <ul className="space-y-2.5">
                 {[
-                  '180 000+ akademiker söker arbete aktivt',
-                  'Genomsnittlig jobbsökarperiod: 9,4 månader',
-                  '68% får aldrig feedback på sina ansökningar',
-                  '31% jobbar utanför sitt utbildningsområde',
-                  'ATS-system avfärdar rätt kandidater automatiskt',
+                  'Var fjärde nyexaminerad akademiker tjänar under studiemedelsnivån 4 månader efter examen',
+                  'Bara 1 av 8 nyexaminerade uppfyller inkomstkravet för a-kassa',
+                  'Nyexaminerade hamnar i ett ekonomiskt mellanrum — utan studiemedel och utan a-kassa',
+                  '"Ett enormt slöseri när studenter inte lyckas komma i arbete" — Saco studentråd',
+                  'Hög arbetslöshet bland akademiker trots att arbetsgivare skriker efter kompetens',
                 ].map(item => (
                   <li key={item} className="flex items-start gap-2.5 text-sm text-muted-foreground">
                     <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0 mt-0.5" />
@@ -315,11 +332,11 @@ export default function HomePage() {
               </div>
               <ul className="space-y-2.5">
                 {[
-                  '74% kan inte hitta rätt kompetens',
-                  'Genomsnittlig rekryteringstid: 6,2 månader',
-                  '42% av rekryteringar misslyckas inom 18 månader',
-                  '45 miljarder SEK förloras i produktion per år',
-                  'Sverige är nr 4 mest missmatchat i EU (OECD)',
+                  '49% av arbetsgivare upplevde rekryteringssvårigheter under senaste året',
+                  '64% anger brist på rätt utbildning och kompetens som primärt rekryteringshinder',
+                  '60% av arbetsplatsbeslutfattare ser inga resultat från arbetsmarknadspolitiken',
+                  '67% av Unionens medlemmar har lågt förtroende för regeringens arbetsmarknadspolitik',
+                  'Grundproblemet: matchning — de arbetslösas kompetens möter inte arbetsgivarnas krav',
                 ].map(item => (
                   <li key={item} className="flex items-start gap-2.5 text-sm text-muted-foreground">
                     <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
@@ -430,52 +447,68 @@ export default function HomePage() {
       {/* ── For seekers / recruiters ── */}
       <section className="py-20 px-6">
         <div className="mx-auto max-w-5xl grid lg:grid-cols-2 gap-5">
-          <div className="rounded-2xl border border-border/60 bg-gradient-to-br from-blue-500/5 to-indigo-500/10 p-10 relative overflow-hidden">
-            <img
-              src="https://randomuser.me/api/portraits/women/55.jpg"
-              alt=""
-              className="absolute top-6 right-6 h-14 w-14 rounded-2xl object-cover opacity-80 ring-2 ring-primary/20"
-            />
-            <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center mb-6 shadow-md shadow-primary/20">
-              <Zap className="h-6 w-6 text-white" />
+          {/* Jobbsökare */}
+          <div className="rounded-2xl border border-border/60 overflow-hidden flex flex-col">
+            <div className="relative h-52 overflow-hidden flex-shrink-0">
+              <img
+                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=700&q=85"
+                alt="Jobbsökare med laptop"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60" />
+              <div className="absolute bottom-5 left-6 flex items-center gap-3">
+                <div className="h-11 w-11 rounded-xl gradient-primary flex items-center justify-center shadow-lg">
+                  <Zap className="h-5 w-5 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">För jobbsökare</h3>
+              </div>
             </div>
-            <h3 className="text-2xl font-bold mb-3">För jobbsökare</h3>
-            <p className="text-muted-foreground mb-6">Ladda upp ditt CV och få omedelbar AI-analys. Se hur väl du matchar varje jobb och exakt vad du behöver förbättra.</p>
-            <ul className="space-y-2.5 mb-8">
-              {['AI analyserar ditt CV automatiskt', 'Se matchningspoäng per jobb', 'Identifiera kompetensgap', 'Förbered dig med AI-intervjufrågor'].map(item => (
-                <li key={item} className="flex items-center gap-2.5 text-sm">
-                  <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <Button asChild className="w-full">
-              <Link href="/register">Hitta ditt drömjobb <ArrowRight className="ml-2 h-4 w-4" /></Link>
-            </Button>
+            <div className="p-8 bg-gradient-to-br from-blue-500/5 to-indigo-500/10 flex flex-col flex-1">
+              <p className="text-muted-foreground mb-6">Ladda upp ditt CV och få omedelbar AI-analys. Se hur väl du matchar varje jobb och exakt vad du behöver förbättra.</p>
+              <ul className="space-y-2.5 mb-8 flex-1">
+                {['AI analyserar ditt CV automatiskt', 'Se matchningspoäng per jobb', 'Identifiera kompetensgap', 'Förbered dig med AI-intervjufrågor'].map(item => (
+                  <li key={item} className="flex items-center gap-2.5 text-sm">
+                    <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Button asChild className="w-full">
+                <Link href="/register">Hitta ditt drömjobb <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              </Button>
+            </div>
           </div>
 
-          <div className="rounded-2xl border border-border/60 bg-gradient-to-br from-violet-500/5 to-purple-500/10 p-10 relative overflow-hidden">
-            <img
-              src="https://randomuser.me/api/portraits/men/41.jpg"
-              alt=""
-              className="absolute top-6 right-6 h-14 w-14 rounded-2xl object-cover opacity-80 ring-2 ring-violet-500/20"
-            />
-            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-6 shadow-md shadow-violet-500/20">
-              <BarChart3 className="h-6 w-6 text-white" />
+          {/* Rekryterare */}
+          <div className="rounded-2xl border border-border/60 overflow-hidden flex flex-col">
+            <div className="relative h-52 overflow-hidden flex-shrink-0">
+              <img
+                src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=700&q=85"
+                alt="Rekryterare i modernt kontor"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60" />
+              <div className="absolute bottom-5 left-6 flex items-center gap-3">
+                <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
+                  <BarChart3 className="h-5 w-5 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">För rekryterare</h3>
+              </div>
             </div>
-            <h3 className="text-2xl font-bold mb-3">För rekryterare</h3>
-            <p className="text-muted-foreground mb-6">Sluta gissa. Få en AI-rankad lista av kandidater med matchningspoäng, kompetensgap och personliga sammanfattningar.</p>
-            <ul className="space-y-2.5 mb-8">
-              {['Publicera jobbannonser på minuter', 'AI rankar alla sökande 0–100', 'Se kandidatsammanfattningar direkt', 'Kommunicera via inbyggd chatt'].map(item => (
-                <li key={item} className="flex items-center gap-2.5 text-sm">
-                  <CheckCircle className="h-4 w-4 text-violet-500 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <Button asChild variant="outline" className="w-full border-violet-500/30 hover:bg-violet-500/10">
-              <Link href="/register">Rekrytera smartare <ArrowRight className="ml-2 h-4 w-4" /></Link>
-            </Button>
+            <div className="p-8 bg-gradient-to-br from-violet-500/5 to-purple-500/10 flex flex-col flex-1">
+              <p className="text-muted-foreground mb-6">Sluta gissa. Få en AI-rankad lista av kandidater med matchningspoäng, kompetensgap och personliga sammanfattningar.</p>
+              <ul className="space-y-2.5 mb-8 flex-1">
+                {['Publicera jobbannonser på minuter', 'AI rankar alla sökande 0–100', 'Se kandidatsammanfattningar direkt', 'Kommunicera via inbyggd chatt'].map(item => (
+                  <li key={item} className="flex items-center gap-2.5 text-sm">
+                    <CheckCircle className="h-4 w-4 text-violet-500 flex-shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Button asChild variant="outline" className="w-full border-violet-500/30 hover:bg-violet-500/10">
+                <Link href="/register">Rekrytera smartare <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>

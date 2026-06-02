@@ -204,7 +204,7 @@ export function RecruiterAnalyticsClient({
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                   <XAxis dataKey="week" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                  <Tooltip formatter={(v: number) => [v, 'Ansökningar']} />
+                  <Tooltip formatter={(v) => [v, 'Ansökningar']} />
                   <Line
                     type="monotone"
                     dataKey="count"
@@ -241,7 +241,7 @@ export function RecruiterAnalyticsClient({
                         <Cell key={i} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(v: number, name: string) => [v, name]} />
+                    <Tooltip formatter={(v, name) => [v, name]} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="flex-1 space-y-2">
@@ -282,7 +282,7 @@ export function RecruiterAnalyticsClient({
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                   <XAxis dataKey="label" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                  <Tooltip formatter={(v: number) => [v, 'Kandidater']} />
+                  <Tooltip formatter={(v) => [v, 'Kandidater']} />
                   <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
