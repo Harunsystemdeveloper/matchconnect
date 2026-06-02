@@ -160,7 +160,11 @@ export function CandidatesClient({
   }
 
   async function updateStatus(appId: string, status: string) {
-    await supabase.from('applications').update({ status, updated_at: new Date().toISOString() }).eq('id', appId)
+    await fetch('/api/applications/update-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ application_id: appId, status }),
+    })
     setApps(apps.map(a => a.id === appId ? { ...a, status } : a))
     toast.success('Status uppdaterad')
   }

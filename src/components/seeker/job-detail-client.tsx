@@ -54,13 +54,14 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
 
   async function applyToJob() {
     setApplying(true)
-    const { data, error } = await supabase.from('applications').insert({
-      job_id: job.id, seeker_id: userId,
-      cover_letter: coverLetter || null, status: 'pending',
-    }).select().single()
-
-    if (error) {
-      toast.error('Ansökan misslyckades', { description: error.message })
+    const res = await fetch('/api/applications/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ job_id: job.id, cover_letter: coverLetter || null }),
+    })
+    const data = await res.json()
+    if (!res.ok) {
+      toast.error('Ansökan misslyckades', { description: data.error })
       setApplying(false)
       return
     }
