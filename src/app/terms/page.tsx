@@ -43,10 +43,6 @@ export default function TermsPage() {
             plattformens AI-analyser. Tjänsten tillhandahålls i befintligt skick.
           </p>
 
-          <h2 className="text-xl font-semibold mt-8">6. Kontakt</h2>
-          <p>
-            Frågor om dessa villkor? Kontakta oss på legal@matchconnect.se.
-          </p>
         </div>
       </main>
       <Footer />

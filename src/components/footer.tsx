@@ -22,6 +22,7 @@ export function Footer() {
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Plattformen</p>
             <ul className="space-y-2.5 text-sm">
               <li><Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">Om oss</Link></li>
+              <li><Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">Priser</Link></li>
               <li><Link href="/register" className="text-muted-foreground hover:text-foreground transition-colors">Kom igång</Link></li>
               <li><Link href="/login" className="text-muted-foreground hover:text-foreground transition-colors">Logga in</Link></li>
             </ul>

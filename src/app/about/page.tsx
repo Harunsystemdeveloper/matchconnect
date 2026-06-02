@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import {
   TrendingDown, AlertTriangle, MapPin, GraduationCap,
-  Search, Eye, Brain, Target, Zap, BarChart3,
-  CheckCircle, ArrowRight, Users, Clock, Sparkles,
-  Building2, TrendingUp, BookOpen, Network
+  Search, Eye, Brain, Target,
+  ArrowRight, Users, Sparkles,
+  Building2, TrendingUp, BookOpen, Network, CheckCircle
 } from 'lucide-react'
 import type { Metadata } from 'next'
 
@@ -142,15 +142,6 @@ const solution = [
     accent: 'text-rose-500',
     accentBg: 'bg-rose-500/10',
   },
-]
-
-const impact = [
-  { value: '2x', label: 'snabbare matchning jämfört med traditionell rekrytering', icon: Zap },
-  { value: '87%', label: 'rekryterar-nöjdhet i pilotomgången', icon: CheckCircle },
-  { value: '3x', label: 'fler relevanta ansökningar per utlyst tjänst', icon: Users },
-  { value: '60%', label: 'kortare time-to-hire för specialisttjänster', icon: Clock },
-  { value: '91%', label: 'av kandidater förstår varför de matchats eller ej', icon: Eye },
-  { value: '45%', label: 'fler matchningar från underrepresenterade grupper', icon: BarChart3 },
 ]
 
 const values = [
@@ -398,33 +389,6 @@ export default function AboutPage() {
                   All analys sker server-side i Sverige, behandlas med GDPR-compliance och lagras aldrig av Anthropic för träning.
                 </p>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Impact metrics ── */}
-        <section className="py-20 px-6 relative overflow-hidden">
-          <div className="absolute inset-0 bg-muted/20 -z-10" />
-          <div className="absolute inset-0 dot-grid opacity-25 -z-10" />
-          <div className="mx-auto max-w-5xl">
-            <div className="text-center mb-14">
-              <Badge variant="outline" className="mb-4 border-blue-500/30 text-blue-500 bg-blue-500/5">Vår påverkan</Badge>
-              <h2 className="text-3xl sm:text-4xl font-bold">Resultat som talar för sig</h2>
-              <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
-                Från vår pilotomgång med 40 arbetsgivare och 1 200 kandidater, Q1 2026.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-5">
-              {impact.map((m) => (
-                <div key={m.value} className="rounded-2xl border border-border/50 bg-background p-6 text-center group hover:border-primary/20 hover:bg-primary/2 transition-colors card-hover">
-                  <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <m.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <p className="text-3xl font-bold gradient-text mb-2">{m.value}</p>
-                  <p className="text-sm text-muted-foreground leading-snug">{m.label}</p>
-                </div>
-              ))}
             </div>
           </div>
         </section>

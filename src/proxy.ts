@@ -28,7 +28,7 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/reset-password', '/about', '/privacy', '/terms', '/cookies']
+  const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/reset-password', '/about', '/pricing', '/privacy', '/terms', '/cookies']
   const isPublic = publicRoutes.some(r => pathname === r) || pathname.startsWith('/api/') || pathname.startsWith('/auth/') || pathname.startsWith('/_next/')
 
   if (!user && !isPublic) {

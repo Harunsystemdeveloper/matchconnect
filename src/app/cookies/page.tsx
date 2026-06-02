@@ -31,10 +31,6 @@ export default function CookiesPage() {
             Vi använder inga tredjepartscookies för spårning eller annonsering.
           </p>
 
-          <h2 className="text-xl font-semibold mt-8">Kontakt</h2>
-          <p>
-            Frågor om cookies? Kontakta oss på privacy@matchconnect.se.
-          </p>
         </div>
       </main>
       <Footer />

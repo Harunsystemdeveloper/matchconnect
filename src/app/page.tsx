@@ -4,12 +4,12 @@ import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { ParadoxStats } from '@/components/paradox-stats'
-import { ImpactStats } from '@/components/impact-stats'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import {
   Brain, Target, Users, TrendingUp, Shield,
   ArrowRight, CheckCircle, Zap, Sparkles,
   FileText, BarChart3, MessageSquare, AlertTriangle,
-  Building2, TrendingDown, Star, Quote
+  Building2, TrendingDown
 } from 'lucide-react'
 
 const features = [
@@ -57,33 +57,6 @@ const features = [
   },
 ]
 
-
-const testimonials = [
-  {
-    quote: 'Jag fick jobb inom 3 veckor. Kompetensgap-analysen visade exakt vad jag behövde lära mig.',
-    name: 'Sara Lindqvist',
-    role: 'Frontend-utvecklare',
-    company: 'Hittat via MatchConnect',
-    rating: 5,
-    avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-  },
-  {
-    quote: 'Vi halverade vår time-to-hire från 4 månader till 6 veckor. AI-rankingen är helt träffsäker.',
-    name: 'Marcus Holm',
-    role: 'Head of Talent',
-    company: 'Tech-startup, Stockholm',
-    rating: 5,
-    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-  },
-  {
-    quote: 'Äntligen en plattform som förstår vad jag faktiskt kan, inte bara vad som står på mitt CV.',
-    name: 'Amina Osei',
-    role: 'Data Scientist',
-    company: 'Rekryterad till Fintech-bolag',
-    rating: 5,
-    avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
-  },
-]
 
 const steps = [
   { step: '01', title: 'Skapa konto', desc: 'Registrera dig gratis som jobbsökare eller rekryterare på under en minut.' },
@@ -148,21 +121,9 @@ export default function HomePage() {
                 ))}
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="flex -space-x-2.5">
-                  {[
-                    'https://randomuser.me/api/portraits/women/44.jpg',
-                    'https://randomuser.me/api/portraits/men/32.jpg',
-                    'https://randomuser.me/api/portraits/women/68.jpg',
-                    'https://randomuser.me/api/portraits/men/75.jpg',
-                    'https://randomuser.me/api/portraits/women/12.jpg',
-                  ].map((src, i) => (
-                    <img key={i} src={src} alt="" className="h-9 w-9 rounded-full object-cover ring-2 ring-background" style={{ zIndex: 5 - i }} />
-                  ))}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground">2 400+</span> jobbsökare och rekryterare har redan gått med
-                </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
+                Kom igång som en av de första — helt gratis
               </div>
             </div>
 
@@ -409,41 +370,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Testimonials ── */}
-      <section className="py-20 px-6">
-        <div className="mx-auto max-w-5xl">
-          <div className="text-center mb-12">
-            <Badge variant="outline" className="mb-4 text-primary border-primary/30">Vad användarna säger</Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold">Riktiga resultat, riktiga människor</h2>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-5">
-            {testimonials.map((t) => (
-              <div key={t.name} className="relative rounded-2xl border border-border/60 bg-card p-6 shimmer flex flex-col gap-4">
-                <Quote className="h-6 w-6 text-primary/30 absolute top-5 right-5" />
-                <div className="flex gap-0.5">
-                  {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <p className="text-sm leading-relaxed text-muted-foreground flex-1">"{t.quote}"</p>
-                <div className="flex items-center gap-3 border-t border-border/50 pt-4">
-                  <img
-                    src={t.avatar}
-                    alt={t.name}
-                    className="h-10 w-10 rounded-full object-cover flex-shrink-0 ring-2 ring-primary/20"
-                  />
-                  <div>
-                    <p className="text-sm font-semibold">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}</p>
-                    <p className="text-xs text-primary/70">{t.company}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── For seekers / recruiters ── */}
       <section className="py-20 px-6">
         <div className="mx-auto max-w-5xl grid lg:grid-cols-2 gap-5">
@@ -513,13 +439,61 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Impact numbers ── */}
-      <section className="py-16 px-6 bg-muted/20">
-        <div className="mx-auto max-w-4xl">
-          <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-10">
-            Resultat från vår pilotomgång — Q1 2026
-          </p>
-          <ImpactStats />
+      {/* ── FAQ ── */}
+      <section className="py-20 px-6 bg-muted/20">
+        <div className="mx-auto max-w-2xl">
+          <div className="text-center mb-12">
+            <Badge variant="outline" className="mb-4 text-primary border-primary/30">Vanliga frågor</Badge>
+            <h2 className="text-2xl sm:text-3xl font-bold">Allt du behöver veta</h2>
+            <p className="text-muted-foreground mt-3">Klicka på en fråga för att se svaret.</p>
+          </div>
+          <Accordion openMultiple={false} className="space-y-3">
+            {[
+              {
+                id: 'faq-1',
+                q: 'Kostar det något att använda MatchConnect?',
+                a: 'Nej — plattformen är helt gratis för både jobbsökare och rekryterare. Inga dolda avgifter, inget kreditkort behövs.',
+              },
+              {
+                id: 'faq-2',
+                q: 'Hur fungerar AI-matchningen?',
+                a: 'Claude AI (Anthropic) läser ditt CV och jobbannonsen, förstår kompetenser, erfarenhet och kontext — och beräknar ett matchningspoäng 0–100 med en transparent förklaring. Ingen svart låda.',
+              },
+              {
+                id: 'faq-3',
+                q: 'Är mina uppgifter säkra?',
+                a: 'All data lagras i Sverige via Supabase och behandlas strikt enligt GDPR. Ditt CV delas aldrig med tredje part utan ditt samtycke, och Anthropic använder inte din data för att träna AI-modeller.',
+              },
+              {
+                id: 'faq-4',
+                q: 'Kan rekryterare se mitt CV utan att jag sökt jobbet?',
+                a: 'Nej. Rekryterare ser bara kandidater som aktivt sökt deras jobb — eller som finns i talangpoolen och valt att vara synliga.',
+              },
+              {
+                id: 'faq-5',
+                q: 'Hur laddar jag upp mitt CV?',
+                a: 'Du laddar upp PDF eller DOCX direkt i din profil efter registrering. AI-analysen körs automatiskt och tar ungefär 30 sekunder.',
+              },
+              {
+                id: 'faq-6',
+                q: 'Fungerar det för alla typer av jobb?',
+                a: 'Ja — plattformen är branschoberoende och fungerar för allt från teknik och ekonomi till vård och kreativa yrken.',
+              },
+            ].map((faq) => (
+              <AccordionItem
+                key={faq.id}
+                value={faq.id}
+                className="rounded-xl border border-border/60 bg-background px-5 data-[state=open]:border-primary/30 data-[state=open]:bg-primary/2 transition-colors"
+              >
+                <AccordionTrigger className="text-sm font-semibold text-left hover:no-underline py-4">
+                  {faq.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-4">
+                  {faq.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
 
