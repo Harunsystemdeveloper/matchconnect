@@ -5,6 +5,8 @@ import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { ParadoxStats } from '@/components/paradox-stats'
 import { DemoMatcher } from '@/components/demo-matcher'
+import { ScrollReveal } from '@/components/scroll-reveal'
+import { AnimatedHeroWidget } from '@/components/animated-hero-widget'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import {
   Brain, Target, Users, TrendingUp, Shield,
@@ -18,43 +20,61 @@ const features = [
     icon: FileText,
     title: 'AI-driven CV-analys',
     description: 'Claude AI läser ditt CV och extraherar kompetenser, erfarenhet och utbildning automatiskt.',
-    color: 'from-blue-500/20 to-indigo-500/20',
+    gradient: 'from-blue-500/25 to-indigo-500/15',
+    border: 'border-blue-500/20 hover:border-blue-500/50',
+    iconBg: 'bg-blue-500/15',
     iconColor: 'text-blue-500',
+    glow: 'hover:shadow-blue-500/15',
   },
   {
     icon: Target,
     title: 'Precisionsmatchning',
     description: 'Varje matchning får ett poäng 0–100 med förklaring av varför du passar för jobbet.',
-    color: 'from-violet-500/20 to-purple-500/20',
+    gradient: 'from-violet-500/25 to-purple-500/15',
+    border: 'border-violet-500/20 hover:border-violet-500/50',
+    iconBg: 'bg-violet-500/15',
     iconColor: 'text-violet-500',
+    glow: 'hover:shadow-violet-500/15',
   },
   {
     icon: TrendingUp,
     title: 'Kompetensgap-analys',
     description: 'Se exakt vilka kompetenser du saknar för drömjobbet och hur du kan fylla gapen.',
-    color: 'from-purple-500/20 to-pink-500/20',
+    gradient: 'from-purple-500/25 to-pink-500/15',
+    border: 'border-purple-500/20 hover:border-purple-500/50',
+    iconBg: 'bg-purple-500/15',
     iconColor: 'text-purple-500',
+    glow: 'hover:shadow-purple-500/15',
   },
   {
     icon: Users,
     title: 'Smart rekrytering',
     description: 'Rekryterare hittar rätt kandidater på minuter, inte månader – med AI-ranking.',
-    color: 'from-cyan-500/20 to-blue-500/20',
+    gradient: 'from-cyan-500/25 to-blue-500/15',
+    border: 'border-cyan-500/20 hover:border-cyan-500/50',
+    iconBg: 'bg-cyan-500/15',
     iconColor: 'text-cyan-500',
+    glow: 'hover:shadow-cyan-500/15',
   },
   {
     icon: MessageSquare,
     title: 'Intervjuförberedelse',
     description: 'Få AI-genererade intervjufrågor baserade på jobbet och din profil.',
-    color: 'from-emerald-500/20 to-teal-500/20',
+    gradient: 'from-emerald-500/25 to-teal-500/15',
+    border: 'border-emerald-500/20 hover:border-emerald-500/50',
+    iconBg: 'bg-emerald-500/15',
     iconColor: 'text-emerald-500',
+    glow: 'hover:shadow-emerald-500/15',
   },
   {
     icon: Shield,
     title: 'GDPR-säkert',
     description: 'Dina data lagras säkert inom EU (Irland) via Supabase och behandlas strikt enligt GDPR.',
-    color: 'from-orange-500/20 to-amber-500/20',
+    gradient: 'from-orange-500/25 to-amber-500/15',
+    border: 'border-orange-500/20 hover:border-orange-500/50',
+    iconBg: 'bg-orange-500/15',
     iconColor: 'text-orange-500',
+    glow: 'hover:shadow-orange-500/15',
   },
 ]
 
@@ -161,43 +181,8 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Product demo — mock browser */}
-              <div className="relative float-animation">
-                <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-primary/20 via-violet-500/20 to-primary/20 blur-sm" />
-                <div className="relative rounded-2xl border border-border/60 bg-card/90 backdrop-blur-sm shadow-2xl shadow-primary/10 overflow-hidden">
-                  <div className="border-b border-border/60 px-4 py-2.5 flex items-center gap-2 bg-muted/30">
-                    <div className="flex gap-1.5">
-                      <div className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
-                      <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/80" />
-                      <div className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
-                    </div>
-                    <div className="flex-1 mx-3 h-5 rounded-md bg-muted/60 flex items-center px-3">
-                      <span className="text-[10px] text-muted-foreground">matchconnect.se/seeker/jobs</span>
-                    </div>
-                  </div>
-                  <div className="p-4 grid grid-cols-3 gap-2.5">
-                    {[
-                      { role: 'Senior React Dev', co: 'Tech-startup', score: 94, color: 'text-emerald-500', bar: 'bg-emerald-500' },
-                      { role: 'Frontend Engineer', co: 'SaaS-bolag', score: 87, color: 'text-blue-500', bar: 'bg-blue-500' },
-                      { role: 'UI/UX Developer', co: 'E-handel', score: 79, color: 'text-violet-500', bar: 'bg-violet-500' },
-                    ].map((job) => (
-                      <div key={job.role} className="rounded-xl border border-border/60 bg-background/70 p-3 text-left">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="h-7 w-7 rounded-lg gradient-primary flex items-center justify-center">
-                            <Brain className="h-3.5 w-3.5 text-white" />
-                          </div>
-                          <span className={`text-base font-bold ${job.color}`}>{job.score}%</span>
-                        </div>
-                        <p className="text-xs font-medium leading-snug">{job.role}</p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5 mb-2">{job.co}</p>
-                        <div className="h-1 rounded-full bg-border overflow-hidden">
-                          <div className={`h-full rounded-full ${job.bar}`} style={{ width: `${job.score}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              {/* Animated product demo */}
+              <AnimatedHeroWidget />
 
             </div>
           </div>
@@ -256,9 +241,9 @@ export default function HomePage() {
           </div>
 
           {/* Animated ticker stats */}
-          <div className="mb-12">
+          <ScrollReveal className="mb-12">
             <ParadoxStats />
-          </div>
+          </ScrollReveal>
 
           {/* Two-column tension */}
           <div className="grid lg:grid-cols-2 gap-5 mb-10">
@@ -323,6 +308,7 @@ export default function HomePage() {
       {/* ── How it works ── */}
       <section className="py-20 px-6">
         <div className="mx-auto max-w-3xl">
+          <ScrollReveal>
           <div className="text-center mb-14">
             <Badge variant="outline" className="mb-4 text-primary border-primary/30">Hur det fungerar</Badge>
             <h2 className="text-2xl sm:text-3xl font-bold">Tre steg till din nästa möjlighet</h2>
@@ -344,20 +330,23 @@ export default function HomePage() {
               ))}
             </div>
           </div>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* ── Live Demo ── */}
       <section className="py-20 px-6 bg-muted/20">
         <div className="mx-auto max-w-2xl">
-          <div className="text-center mb-10">
-            <Badge variant="outline" className="mb-4 text-primary border-primary/30">Prova direkt</Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold">Se AI-matchningen i realtid</h2>
-            <p className="text-muted-foreground mt-3">
-              Inga konton. Inga kortuppgifter. Lägg in ett jobb och dina kompetenser — få ett poäng på 10 sekunder.
-            </p>
-          </div>
-          <DemoMatcher />
+          <ScrollReveal>
+            <div className="text-center mb-10">
+              <Badge variant="outline" className="mb-4 text-primary border-primary/30">Prova direkt</Badge>
+              <h2 className="text-2xl sm:text-3xl font-bold">Se AI-matchningen i realtid</h2>
+              <p className="text-muted-foreground mt-3">
+                Inga konton. Inga kortuppgifter. Lägg in ett jobb och dina kompetenser — få ett poäng på 10 sekunder.
+              </p>
+            </div>
+            <DemoMatcher />
+          </ScrollReveal>
         </div>
       </section>
 
@@ -372,14 +361,16 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {features.map((f) => (
-              <div key={f.title} className={`group relative rounded-2xl border border-border/50 bg-gradient-to-br ${f.color} p-6 card-hover shimmer`}>
-                <div className="h-11 w-11 rounded-xl bg-background/80 backdrop-blur-sm flex items-center justify-center mb-5 shadow-sm">
-                  <f.icon className={`h-5 w-5 ${f.iconColor}`} />
+            {features.map((f, i) => (
+              <ScrollReveal key={f.title} delay={i * 80}>
+                <div className={`group relative rounded-2xl border ${f.border} bg-gradient-to-br ${f.gradient} p-6 card-hover shimmer hover:shadow-xl ${f.glow} transition-all duration-300 h-full`}>
+                  <div className={`h-11 w-11 rounded-xl ${f.iconBg} flex items-center justify-center mb-5 shadow-sm group-hover:scale-110 transition-transform duration-300`}>
+                    <f.icon className={`h-5 w-5 ${f.iconColor}`} />
+                  </div>
+                  <h3 className="font-semibold text-base mb-2">{f.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{f.description}</p>
                 </div>
-                <h3 className="font-semibold text-base mb-2">{f.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{f.description}</p>
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
