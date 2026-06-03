@@ -188,15 +188,17 @@ export function CandidatesClient({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Link href="/recruiter/jobs" className="text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" />
-        </Link>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold">{job.title}</h1>
-          <p className="text-muted-foreground">{apps.length} kandidater</p>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex items-center gap-3 flex-1">
+          <Link href="/recruiter/jobs" className="text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold">{job.title}</h1>
+            <p className="text-muted-foreground text-sm">{apps.length} kandidater</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <div className="flex rounded-md border">
             <Button
               variant={viewMode === 'list' ? 'secondary' : 'ghost'}
@@ -216,26 +218,26 @@ export function CandidatesClient({
             </Button>
           </div>
           {filtered.length > 0 && (
-            <Button variant="outline" onClick={exportCsv}>
+            <Button variant="outline" size="sm" onClick={exportCsv} className="hidden sm:flex">
               <Download className="mr-2 h-4 w-4" />
-              Exportera CSV
+              CSV
             </Button>
           )}
-          <Button onClick={runAiMatch} disabled={matching}>
+          <Button onClick={runAiMatch} disabled={matching} size="sm">
             {matching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Brain className="mr-2 h-4 w-4" />}
-            {matching ? 'Matchar...' : 'AI-matcha kandidater'}
+            {matching ? 'Matchar...' : 'AI-matcha'}
           </Button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3">
-        <div className="relative flex-1 min-w-48">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+        <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Sök namn, kompetens, plats..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
         </div>
         <Select value={filterExp} onValueChange={(v) => setFilterExp(v ?? 'all')}>
-          <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All erfarenhet</SelectItem>
             <SelectItem value="0">Ingen erfarenhet</SelectItem>
@@ -246,7 +248,7 @@ export function CandidatesClient({
           </SelectContent>
         </Select>
         <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v ?? 'all')}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Alla statusar</SelectItem>
             {statusOptions.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
@@ -395,13 +397,13 @@ export function CandidatesClient({
             return (
               <Card key={app.id} className={app.is_shortlisted ? 'ring-2 ring-primary/30' : ''}>
                 <CardContent className="pt-5 pb-5">
-                  <div className="flex items-start gap-4">
+                  <div className="flex flex-col sm:flex-row items-start gap-4">
                     <Avatar className="h-12 w-12 flex-shrink-0">
                       <AvatarImage src={seeker?.avatar_url ?? ''} />
                       <AvatarFallback className="gradient-primary text-white text-sm">{initials}</AvatarFallback>
                     </Avatar>
 
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 w-full">
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <p className="font-semibold">{seeker?.full_name ?? 'Anonym kandidat'}</p>

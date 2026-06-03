@@ -33,7 +33,7 @@ export default async function RecruiterDashboard({ profile }: { profile: Profile
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Aktiva annonser</CardTitle>
@@ -85,21 +85,23 @@ export default async function RecruiterDashboard({ profile }: { profile: Profile
           <div className="space-y-3">
             {jobs.map((job) => (
               <Card key={job.id}>
-                <CardContent className="flex items-center justify-between p-4">
-                  <div>
-                    <p className="font-medium">{job.title}</p>
-                    <p className="text-sm text-muted-foreground">{job.location ?? '—'} · {job.work_type ?? '—'}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-muted-foreground">
-                      {(job.applications as { count: number }[])?.[0]?.count ?? 0} ansökningar
-                    </span>
-                    <Badge variant={job.status === 'active' ? 'default' : 'secondary'}>
-                      {job.status === 'active' ? 'Aktiv' : job.status === 'paused' ? 'Pausad' : 'Stängd'}
-                    </Badge>
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link href={`/recruiter/jobs/${job.id}/candidates`}>Visa</Link>
-                    </Button>
+                <CardContent className="p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{job.title}</p>
+                      <p className="text-sm text-muted-foreground">{job.location ?? '—'} · {job.work_type ?? '—'}</p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm text-muted-foreground">
+                        {(job.applications as { count: number }[])?.[0]?.count ?? 0} ansökningar
+                      </span>
+                      <Badge variant={job.status === 'active' ? 'default' : 'secondary'}>
+                        {job.status === 'active' ? 'Aktiv' : job.status === 'paused' ? 'Pausad' : 'Stängd'}
+                      </Badge>
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href={`/recruiter/jobs/${job.id}/candidates`}>Visa</Link>
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

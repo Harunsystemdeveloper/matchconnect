@@ -104,7 +104,7 @@ export function SeekerDashboard({ profile, cvProfile, applications, savedJobsCou
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
           { icon: FileText, label: 'Ansökningar', value: applications.length, href: '/seeker/applications' },
           { icon: Star, label: 'Shortlistade', value: applications.filter(a => a.status === 'shortlisted').length, href: '/seeker/applications' },

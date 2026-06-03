@@ -110,7 +110,7 @@ export default async function ApplicationsPage() {
             return (
               <Card key={app.id}>
                 <CardContent className="pt-5 pb-5">
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <Link href={`/seeker/jobs/${job?.id}`} className="hover:underline">
                         <h3 className="font-semibold">{job?.title ?? 'Okänt jobb'}</h3>
@@ -155,7 +155,7 @@ export default async function ApplicationsPage() {
                       )}
                     </div>
 
-                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                    <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 flex-shrink-0 flex-wrap">
                       {app.match_score != null && (
                         <div className="text-center">
                           <p className="text-xl font-bold gradient-text">{app.match_score}%</p>

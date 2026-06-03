@@ -144,9 +144,9 @@ export function JobsListClient({ jobs: initialJobs, userId }: { jobs: Job[]; use
         </div>
 
         {/* Salary filter */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <SlidersHorizontal className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-          <div className="relative w-48">
+          <div className="relative w-full sm:w-48">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">Min</span>
             <Input
               type="number"

@@ -444,7 +444,7 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
       {similarJobs.length > 0 && (
         <div className="mt-8">
           <h2 className="text-lg font-semibold mb-4">Liknande jobb</h2>
-          <div className="grid sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {similarJobs.map(sj => (
               <Link key={sj.id} href={`/seeker/jobs/${sj.id}`}>
                 <Card className="hover:shadow-md transition-shadow h-full">
