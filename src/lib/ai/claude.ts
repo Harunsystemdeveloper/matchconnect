@@ -4,7 +4,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 export async function analyzeCv(cvText: string) {
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
+    model: 'claude-sonnet-4-7',
     max_tokens: 1500,
     system: `Du är en expert HR-analytiker och karriärcoach med djup kunskap om den svenska arbetsmarknaden.
 Din uppgift är att analysera CV-text och extrahera strukturerad information.
@@ -56,7 +56,7 @@ export async function matchCandidates(job: {
   }))
 
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
+    model: 'claude-sonnet-4-7',
     max_tokens: 2000,
     system: `Du är en expert rekryteringsanalytiker. Matcha kandidater mot jobbannonser med precision.
 
@@ -97,7 +97,7 @@ export async function analyzeSkillGaps(job: {
   skills_required: string[]
 }, candidateSkills: string[], experienceYears: number) {
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
+    model: 'claude-sonnet-4-7',
     max_tokens: 1000,
     system: `Du är en karriärcoach. Analysera kompetensgap mellan kandidat och jobb.
 
@@ -127,7 +127,7 @@ export async function generateInterviewQuestions(job: {
   skills_required: string[]
 }, candidateProfile: { skills: string[]; experience_years: number; summary: string }) {
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
+    model: 'claude-sonnet-4-7',
     max_tokens: 1200,
     system: `Du är en erfaren rekryteringskonsult. Skapa personaliserade intervjufrågor.
 
@@ -162,7 +162,7 @@ export async function analyzeCV(cvText: string) {
 
 export async function calculateMatchScore(cvText: string, jobDescription: string, jobRequirements: string) {
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
+    model: 'claude-sonnet-4-7',
     max_tokens: 1024,
     messages: [
       {
@@ -192,7 +192,7 @@ Return only valid JSON, no markdown.`,
 
 export async function identifySkillGaps(cvText: string, jobDescription: string, skillsRequired: string[]) {
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
+    model: 'claude-sonnet-4-7',
     max_tokens: 1024,
     messages: [
       {
@@ -221,7 +221,7 @@ Return only valid JSON, no markdown.`,
 
 export async function summarizeCandidate(cvText: string, matchScore: number, skillGaps: string[]) {
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
+    model: 'claude-sonnet-4-7',
     max_tokens: 512,
     messages: [
       {

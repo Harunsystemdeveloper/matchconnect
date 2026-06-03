@@ -36,7 +36,7 @@ export async function logAiDecision(params: LogAiDecisionParams): Promise<void> 
     input_skills: params.inputSkills ?? null,
     output_skills_matched: params.outputSkillsMatched ?? null,
     output_skills_missing: params.outputSkillsMissing ?? null,
-    model_id: 'claude-sonnet-4-6',
+    model_id: 'claude-sonnet-4-7',
   })
 
   // Logging must never crash the main flow — only log errors
