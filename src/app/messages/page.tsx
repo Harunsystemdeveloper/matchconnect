@@ -46,7 +46,12 @@ export default async function MessagesPage({
       <div className="flex-1 flex overflow-hidden min-h-0">
         <MessagesClient
           currentUser={profile}
-          conversations={(conversations ?? []) as ConversationPreview[]}
+          conversations={(conversations ?? []).map(c => ({
+            id: c.id,
+            last_message_at: c.last_message_at,
+            recruiter: Array.isArray(c.recruiter) ? (c.recruiter[0] ?? null) : c.recruiter,
+            seeker: Array.isArray(c.seeker) ? (c.seeker[0] ?? null) : c.seeker,
+          })) as ConversationPreview[]}
           initialConversationId={targetUserId ? undefined : undefined}
         />
       </div>

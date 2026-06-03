@@ -73,7 +73,7 @@ export function SeekerProfileClient({ profile, cvProfile: initialCv }: { profile
     const file = e.target.files?.[0]
     if (!file) return
     setAvatarUploading(true)
-    const path = `avatars/${profile.id}.${file.name.split('.').pop()}`
+    const path = `${profile.id}/${profile.id}.${file.name.split('.').pop()}`
     const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
     if (error) { toast.error('Uppladdning misslyckades'); setAvatarUploading(false); return }
     const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
@@ -89,9 +89,9 @@ export function SeekerProfileClient({ profile, cvProfile: initialCv }: { profile
 
     setCvUploading(true)
     const ext = file.name.split('.').pop()?.toLowerCase() ?? 'pdf'
-    const path = `cvs/${profile.id}.${ext}`
+    const path = `${profile.id}/${profile.id}.${ext}`
     const { error: uploadError } = await supabase.storage.from('cvs').upload(path, file, { upsert: true })
-    if (uploadError) { toast.error('Uppladdning misslyckades'); setCvUploading(false); return }
+    if (uploadError) { toast.error('Uppladdning misslyckades', { description: uploadError.message }); setCvUploading(false); return }
 
     const { data: { publicUrl } } = supabase.storage.from('cvs').getPublicUrl(path)
     await supabase.from('cv_profiles').upsert({ seeker_id: profile.id, cv_url: publicUrl }, { onConflict: 'seeker_id' })
@@ -166,7 +166,7 @@ export function SeekerProfileClient({ profile, cvProfile: initialCv }: { profile
   }
 
   function addSkill() {
-    const s = skillInput.trim()
+    const s = skillInput.trim().toLowerCase()
     if (s && !skills.includes(s) && skills.length < 25) {
       setSkills([...skills, s])
       setSkillInput('')

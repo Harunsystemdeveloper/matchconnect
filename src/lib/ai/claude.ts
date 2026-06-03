@@ -4,7 +4,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 export async function analyzeCv(cvText: string) {
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-7',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1500,
     system: `Du är en expert HR-analytiker och karriärcoach med djup kunskap om den svenska arbetsmarknaden.
 Din uppgift är att analysera CV-text och extrahera strukturerad information. Du hanterar ALLA typer av yrken — IT, vård, ekonomi, juridik, handel, bygg, pedagogik, kreativa yrken, m.fl.
@@ -56,9 +56,14 @@ export async function matchCandidates(job: {
   }))
 
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-7',
+    model: 'claude-sonnet-4-6',
     max_tokens: 2000,
-    system: `Du är en expert rekryteringsanalytiker. Matcha kandidater mot jobbannonser med precision. Du hanterar ALLA branscher och yrkesroller — IT, vård, ekonomi, juridik, handel, pedagogik, bygg, kreativa yrken m.fl.
+    system: `Du är en expert rekryteringsanalytiker. Matcha kandidater mot jobbannonser med precision.
+
+VIKTIGA REGLER:
+- "matching_skills" och "missing_skills" får ENDAST innehålla kompetenser från jobbets "Krav"-lista
+- Lägg ALDRIG till egna kompetenser som inte finns i Krav-listan
+- Om Krav-listan är tom, sätt båda till tomma arrayer
 
 Returnera ALLTID giltig JSON:
 {
@@ -97,23 +102,29 @@ export async function analyzeSkillGaps(job: {
   skills_required: string[]
 }, candidateSkills: string[], experienceYears: number) {
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-7',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1000,
-    system: `Du är en karriärcoach med bred branschkunskap. Analysera kompetensgap mellan kandidat och jobb. Du hanterar alla typer av yrken och branscher — IT, vård, ekonomi, juridik, handel, pedagogik, bygg, kreativa yrken m.fl.
+    system: `Du är en karriärcoach. Analysera kompetensgap mellan en kandidat och en jobbannons.
+
+VIKTIGA REGLER:
+- "missing_skills" får ENDAST innehålla kompetenser från listan "Efterfrågade kompetenser" — lägg ALDRIG till egna förslag eller kompetenser från beskrivningen
+- "matching_skills" får ENDAST innehålla kompetenser från "Efterfrågade kompetenser" som kandidaten faktiskt har
+- Om jobbkravslistan är tom, sätt missing_skills och matching_skills till tomma arrayer
+- recommendations: 2-3 konkreta råd baserade enbart på de faktiska gapen
 
 Returnera giltig JSON:
 {
   "match_score": 75,
-  "missing_skills": ["skill1", "skill2"],
-  "matching_skills": ["skill3", "skill4"],
-  "recommendations": ["Rekommendation 1", "Rekommendation 2"],
+  "missing_skills": ["skill1"],
+  "matching_skills": ["skill2"],
+  "recommendations": ["Råd 1", "Råd 2"],
   "gap_summary": "1-2 meningar om gapet på svenska"
 }
 
 Svara ENDAST med JSON.`,
     messages: [{
       role: 'user',
-      content: `Jobb: ${job.title}\nJobbkrav: ${job.skills_required?.join(', ')}\nJobbeskrivning: ${job.description}\n\nKandidatens kompetenser: ${candidateSkills.join(', ')}\nErfarenhet: ${experienceYears} år`,
+      content: `Jobb: ${job.title}\nEfterfrågade kompetenser: ${job.skills_required?.join(', ') || '(inga specificerade)'}\nJobbeskrivning: ${job.description}\n\nKandidatens kompetenser: ${candidateSkills.join(', ')}\nErfarenhet: ${experienceYears} år`,
     }],
   })
 
@@ -127,7 +138,7 @@ export async function generateInterviewQuestions(job: {
   skills_required: string[]
 }, candidateProfile: { skills: string[]; experience_years: number; summary: string }) {
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-7',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1200,
     system: `Du är en erfaren rekryteringskonsult med bred branschkunskap. Skapa personaliserade intervjufrågor anpassade till ALLA typer av yrken och branscher — IT, vård, ekonomi, juridik, handel, pedagogik, bygg, kreativa yrken m.fl.
 
@@ -168,7 +179,7 @@ export async function analyzeCV(cvText: string) {
 
 export async function calculateMatchScore(cvText: string, jobDescription: string, jobRequirements: string) {
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-7',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1024,
     messages: [
       {
@@ -198,7 +209,7 @@ Return only valid JSON, no markdown.`,
 
 export async function identifySkillGaps(cvText: string, jobDescription: string, skillsRequired: string[]) {
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-7',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1024,
     messages: [
       {
@@ -227,7 +238,7 @@ Return only valid JSON, no markdown.`,
 
 export async function summarizeCandidate(cvText: string, matchScore: number, skillGaps: string[]) {
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-7',
+    model: 'claude-sonnet-4-6',
     max_tokens: 512,
     messages: [
       {

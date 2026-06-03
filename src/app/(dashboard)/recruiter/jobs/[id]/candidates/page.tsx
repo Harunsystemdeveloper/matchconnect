@@ -22,7 +22,7 @@ export default async function CandidatesPage({ params }: { params: Promise<{ id:
 
   const { data: applications } = await supabase
     .from('applications')
-    .select('*, seeker:profiles(id, full_name, avatar_url, headline, location), cv:cv_profiles(skills, experience_years, ai_summary, languages)')
+    .select('*, seeker:profiles(id, full_name, avatar_url, headline, location)')
     .eq('job_id', id)
     .order('match_score', { ascending: false, nullsFirst: false })
 
@@ -33,6 +33,16 @@ export default async function CandidatesPage({ params }: { params: Promise<{ id:
 
   const shortlistedIds = new Set(shortlisted?.map(s => s.application_id) ?? [])
   const appliedSeekerIds = new Set((applications ?? []).map(a => a.seeker_id))
+
+  // Fetch cv_profiles separately (no direct FK from applications → cv_profiles)
+  const seekerIds = [...appliedSeekerIds]
+  const { data: cvProfiles } = seekerIds.length > 0
+    ? await supabase
+        .from('cv_profiles')
+        .select('seeker_id, skills, experience_years, ai_summary, languages')
+        .in('seeker_id', seekerIds)
+    : { data: [] }
+  const cvMap = new Map((cvProfiles ?? []).map(cv => [cv.seeker_id, cv]))
 
   // Suggested: seekers who have NOT applied but whose skills overlap with the job
   let suggestedProfiles: {
@@ -70,7 +80,11 @@ export default async function CandidatesPage({ params }: { params: Promise<{ id:
   return (
     <CandidatesClient
       job={job}
-      applications={(applications ?? []).map(a => ({ ...a, is_shortlisted: shortlistedIds.has(a.id) }))}
+      applications={(applications ?? []).map(a => ({
+        ...a,
+        is_shortlisted: shortlistedIds.has(a.id),
+        cv: cvMap.get(a.seeker_id) ?? null,
+      }))}
       recruiterId={user.id}
       suggestedProfiles={suggestedProfiles}
     />

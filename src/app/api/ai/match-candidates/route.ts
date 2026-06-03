@@ -34,22 +34,30 @@ export async function POST(request: Request) {
   // Fetch only applicants who have actually applied for this specific job
   const { data: applications } = await supabase
     .from('applications')
-    .select('id, seeker_id, seeker:profiles(id, full_name, cv_profiles(skills, experience_years, ai_summary))')
+    .select('id, seeker_id, seeker:profiles(id, full_name)')
     .eq('job_id', parsed.data.job_id)
 
   if (!applications || applications.length === 0) {
     return NextResponse.json({ matches: [], message: 'Inga ansökningar att matcha än.' })
   }
 
+  // Fetch cv_profiles separately (no direct FK from applications → cv_profiles)
+  const seekerIds = applications.map(a => a.seeker_id)
+  const { data: cvProfiles } = await supabase
+    .from('cv_profiles')
+    .select('seeker_id, skills, experience_years, ai_summary')
+    .in('seeker_id', seekerIds)
+  const cvMap = new Map((cvProfiles ?? []).map(cv => [cv.seeker_id, cv]))
+
   // Build candidate list from actual applicants only
   const candidates = applications.map((app) => {
     const seeker = Array.isArray(app.seeker) ? app.seeker[0] : app.seeker
-    const cvProfile = seeker?.cv_profiles
+    const cvProfile = cvMap.get(app.seeker_id) ?? null
     return {
       applicationId: app.id,
       id: seeker?.id ?? app.seeker_id,
       full_name: seeker?.full_name ?? null,
-      cv_profile: Array.isArray(cvProfile) ? cvProfile[0] ?? null : cvProfile ?? null,
+      cv_profile: cvProfile,
     }
   })
 

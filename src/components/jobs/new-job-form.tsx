@@ -42,7 +42,7 @@ export default function NewJobForm() {
       title: data.title,
       description: data.description,
       requirements: data.requirements ?? null,
-      skills_required: data.skills_required ? data.skills_required.split(',').map(s => s.trim()) : null,
+      skills_required: data.skills_required ? data.skills_required.split(',').map(s => s.trim().toLowerCase()).filter(Boolean) : null,
       location: data.location ?? null,
       work_type: data.work_type ?? null,
       salary_min: data.salary_min ? parseInt(data.salary_min) : null,

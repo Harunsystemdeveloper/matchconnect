@@ -59,7 +59,7 @@ export function MessagesClient({
       .order('created_at', { ascending: true })
       .then(({ data }) => setMessages(data ?? []))
 
-    // Subscribe to new messages
+    // Subscribe to new messages from others (own messages are added optimistically)
     const channel = supabase
       .channel(`messages:${activeConv}`)
       .on('postgres_changes', {
@@ -68,7 +68,17 @@ export function MessagesClient({
         table: 'messages',
         filter: `conversation_id=eq.${activeConv}`,
       }, (payload) => {
-        setMessages(prev => [...prev, payload.new as Message])
+        const incoming = payload.new as Message
+        setMessages(prev => {
+          // Avoid duplicates: skip if real ID already exists, or replace optimistic placeholder
+          if (prev.some(m => m.id === incoming.id)) return prev
+          const withoutOptimistic = prev.filter(m => !(
+            m.id.startsWith('tmp-') &&
+            m.sender_id === incoming.sender_id &&
+            m.content === incoming.content
+          ))
+          return [...withoutOptimistic, incoming]
+        })
       })
       .subscribe()
 
@@ -82,18 +92,35 @@ export function MessagesClient({
 
   async function sendMessage() {
     if (!input.trim() || !activeConv) return
+    const content = input.trim()
+    setInput('')
     setSending(true)
-    const { error } = await supabase.from('messages').insert({
+
+    // Optimistically add message immediately so UI feels instant
+    const tmpId = `tmp-${Date.now()}`
+    const optimistic: Message = {
+      id: tmpId,
       conversation_id: activeConv,
       sender_id: currentUser.id,
-      content: input.trim(),
-    })
+      content,
+      created_at: new Date().toISOString(),
+    }
+    setMessages(prev => [...prev, optimistic])
+
+    const { data: inserted, error } = await supabase
+      .from('messages')
+      .insert({ conversation_id: activeConv, sender_id: currentUser.id, content })
+      .select()
+      .single()
+
     if (error) {
       toast.error('Kunde inte skicka meddelandet')
+      setMessages(prev => prev.filter(m => m.id !== tmpId))
+      setInput(content)
     } else {
-      // Update last_message_at
-      await supabase.from('conversations').update({ last_message_at: new Date().toISOString() }).eq('id', activeConv)
-      setInput('')
+      // Replace optimistic placeholder with real message from DB
+      setMessages(prev => prev.map(m => m.id === tmpId ? (inserted as Message) : m))
+      supabase.from('conversations').update({ last_message_at: new Date().toISOString() }).eq('id', activeConv)
     }
     setSending(false)
   }

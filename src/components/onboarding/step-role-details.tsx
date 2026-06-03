@@ -32,7 +32,7 @@ export function StepRoleDetails({ profile, onNext, onBack }: { profile: Profile;
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({ resolver: zodResolver(schema) })
 
   function addSkill() {
-    const s = skillInput.trim()
+    const s = skillInput.trim().toLowerCase()
     if (s && !skills.includes(s) && skills.length < 20) {
       setSkills([...skills, s])
       setSkillInput('')

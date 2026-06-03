@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     await supabase.from('cv_profiles').upsert({
       seeker_id: user.id,
       cv_text: parsed.data.cv_text,
-      skills: analysis.skills,
+      skills: analysis.skills?.map((s: string) => s.toLowerCase()),
       experience_years: analysis.experience_years,
       education: analysis.education,
       languages: analysis.languages,

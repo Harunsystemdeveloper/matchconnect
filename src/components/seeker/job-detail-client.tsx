@@ -39,6 +39,10 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
   const [questions, setQuestions] = useState<{ question: string; category: string; why: string }[]>([])
   const [loadingGaps, setLoadingGaps] = useState(false)
   const [loadingQuestions, setLoadingQuestions] = useState(false)
+  const [phone, setPhone] = useState('')
+  const [availability, setAvailability] = useState('')
+  const [salaryExpectation, setSalaryExpectation] = useState('')
+  const [applyStep, setApplyStep] = useState<1 | 2>(1)
   const supabase = createClient()
 
   async function toggleSave() {
@@ -54,10 +58,19 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
 
   async function applyToJob() {
     setApplying(true)
+
+    // Build structured cover letter from all fields
+    const parts: string[] = []
+    if (phone) parts.push(`📱 Telefon: ${phone}`)
+    if (availability) parts.push(`📅 Tillgänglighet: ${availability}`)
+    if (salaryExpectation) parts.push(`💰 Löneanspråk: ${salaryExpectation}`)
+    const metaBlock = parts.join('\n')
+    const fullCoverLetter = [metaBlock, coverLetter].filter(Boolean).join('\n\n')
+
     const res = await fetch('/api/applications/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ job_id: job.id, cover_letter: coverLetter || null }),
+      body: JSON.stringify({ job_id: job.id, cover_letter: fullCoverLetter || null }),
     })
     const data = await res.json()
     if (!res.ok) {
@@ -136,11 +149,18 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
                 )}
                 {job.work_type && <Badge variant="outline">{job.work_type}</Badge>}
                 {job.experience_level && <Badge variant="outline">{job.experience_level}</Badge>}
-                {job.salary_min && job.salary_max && (
-                  <span className="text-sm text-muted-foreground">
-                    {job.salary_min.toLocaleString('sv-SE')}–{job.salary_max.toLocaleString('sv-SE')} {job.currency}/mån
-                  </span>
-                )}
+                {(() => {
+                  const cur = job.currency ?? ''
+                  if (cur.startsWith('ök')) return <span className="text-sm text-muted-foreground font-medium">Lön enligt överenskommelse</span>
+                  if (job.salary_min || job.salary_max) {
+                    const label = cur.startsWith('fast+rörlig') ? 'Fast + rörlig' : cur.startsWith('provision') ? 'Provision' : cur.startsWith('SEK/tim') ? 'SEK/tim' : cur.startsWith('SEK/år') ? 'SEK/år' : 'SEK/mån'
+                    const range = job.salary_min && job.salary_max
+                      ? `${job.salary_min.toLocaleString('sv-SE')}–${job.salary_max.toLocaleString('sv-SE')}`
+                      : job.salary_min ? `från ${job.salary_min.toLocaleString('sv-SE')}` : `upp till ${job.salary_max?.toLocaleString('sv-SE')}`
+                    return <span className="text-sm font-medium text-foreground">{range} {label}</span>
+                  }
+                  return null
+                })()}
                 {job.deadline && (() => {
                   const days = Math.ceil((new Date(job.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
                   const urgent = days <= 3
@@ -295,46 +315,124 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
         {/* Apply sidebar */}
         <div>
           <Card className="sticky top-20">
-            <CardHeader>
+            <CardHeader className="pb-3">
               <CardTitle className="text-base">
                 {application ? 'Ansökan skickad' : 'Ansök nu'}
               </CardTitle>
+              {!application && (
+                <div className="flex gap-1 mt-2">
+                  {[1, 2].map(s => (
+                    <div
+                      key={s}
+                      className={`h-1 flex-1 rounded-full transition-colors ${applyStep >= s ? 'bg-primary' : 'bg-muted'}`}
+                    />
+                  ))}
+                </div>
+              )}
             </CardHeader>
             <CardContent className="space-y-4">
               {application ? (
-                <div className="text-center space-y-2">
-                  <CheckCircle className="h-10 w-10 text-green-500 mx-auto" />
-                  <p className="text-sm font-medium">Du har ansökt!</p>
-                  {application.ai_summary && (
-                    <p className="text-xs text-muted-foreground">{application.ai_summary}</p>
-                  )}
+                <div className="text-center space-y-3">
+                  <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto">
+                    <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div>
+                    <p className="font-semibold">Ansökan skickad!</p>
+                    <p className="text-xs text-muted-foreground mt-1">Rekryteraren granskar din ansökan</p>
+                  </div>
                   {application.match_score != null && (
-                    <div>
+                    <div className="rounded-lg bg-muted/50 p-3">
                       <p className="text-2xl font-bold gradient-text">{application.match_score}%</p>
-                      <p className="text-xs text-muted-foreground">matchningspoäng</p>
+                      <p className="text-xs text-muted-foreground">AI-matchningspoäng</p>
                     </div>
                   )}
+                  {application.ai_summary && (
+                    <p className="text-xs text-muted-foreground italic leading-relaxed">{application.ai_summary}</p>
+                  )}
+                  <Link href="/seeker/applications" className="block text-xs text-primary hover:underline">
+                    Se alla mina ansökningar →
+                  </Link>
                 </div>
+              ) : applyStep === 1 ? (
+                <>
+                  <p className="text-xs text-muted-foreground">Steg 1 av 2 — Grunduppgifter</p>
+
+                  <div className="space-y-3">
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium">Telefonnummer <span className="text-muted-foreground font-normal">(valfritt)</span></label>
+                      <input
+                        type="tel"
+                        placeholder="070-123 45 67"
+                        value={phone}
+                        onChange={e => setPhone(e.target.value)}
+                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium">Tillgänglighet <span className="text-muted-foreground font-normal">(valfritt)</span></label>
+                      <select
+                        value={availability}
+                        onChange={e => setAvailability(e.target.value)}
+                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <option value="">Välj tillgänglighet</option>
+                        <option value="Omgående">Omgående</option>
+                        <option value="Inom 1 månad">Inom 1 månad</option>
+                        <option value="Inom 2 månader">Inom 2 månader</option>
+                        <option value="Inom 3 månader">Inom 3 månader</option>
+                        <option value="Enligt överenskommelse">Enligt överenskommelse</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium">Löneanspråk <span className="text-muted-foreground font-normal">(valfritt)</span></label>
+                      <input
+                        type="text"
+                        placeholder="t.ex. 42 000 SEK/mån"
+                        value={salaryExpectation}
+                        onChange={e => setSalaryExpectation(e.target.value)}
+                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      />
+                    </div>
+                  </div>
+
+                  {!cvProfile?.skills?.length && (
+                    <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-md p-2">
+                      Tips: <Link href="/seeker/profile" className="underline">Lägg till kompetenser</Link> för ett bättre AI-matchningspoäng.
+                    </p>
+                  )}
+
+                  <Button className="w-full" onClick={() => setApplyStep(2)}>
+                    Nästa steg →
+                  </Button>
+                </>
               ) : (
                 <>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Personligt brev (valfritt)</label>
+                  <p className="text-xs text-muted-foreground">Steg 2 av 2 — Personligt brev</p>
+
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium">
+                      Berätta om dig själv <span className="text-muted-foreground font-normal">(valfritt)</span>
+                    </label>
                     <Textarea
-                      placeholder="Berätta varför du passar för den här rollen..."
-                      rows={5}
+                      placeholder={`Varför söker du den här rollen?\nVad gör dig till en bra kandidat?\nVad vill du bidra med?`}
+                      rows={7}
                       value={coverLetter}
                       onChange={e => setCoverLetter(e.target.value)}
                     />
+                    <p className="text-xs text-muted-foreground">{coverLetter.length}/1000 tecken</p>
                   </div>
-                  {!cvProfile && (
-                    <p className="text-xs text-orange-600 dark:text-orange-400">
-                      Tips: Ladda upp ditt CV för bättre matchning.
-                    </p>
-                  )}
-                  <Button className="w-full" onClick={applyToJob} disabled={applying}>
-                    {applying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Skicka ansökan
-                  </Button>
+
+                  <div className="flex gap-2">
+                    <Button variant="outline" className="flex-1" onClick={() => setApplyStep(1)}>
+                      ← Tillbaka
+                    </Button>
+                    <Button className="flex-1" onClick={applyToJob} disabled={applying}>
+                      {applying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Skicka
+                    </Button>
+                  </div>
                 </>
               )}
             </CardContent>

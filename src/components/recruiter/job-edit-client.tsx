@@ -55,7 +55,7 @@ export function JobEditClient({ job }: { job: Job }) {
   })
 
   function addSkill() {
-    const s = skillInput.trim()
+    const s = skillInput.trim().toLowerCase()
     if (s && !skills.includes(s) && skills.length < 20) {
       setSkills([...skills, s])
       setSkillInput('')
