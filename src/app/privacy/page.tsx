@@ -11,7 +11,7 @@ export default function PrivacyPage() {
       <main className="flex-1 mx-auto max-w-3xl px-4 py-16">
         <h1 className="text-3xl font-bold mb-6">Integritetspolicy</h1>
         <div className="prose prose-sm dark:prose-invert max-w-none space-y-4">
-          <p className="text-muted-foreground">Senast uppdaterad: 2026-03-26</p>
+          <p className="text-muted-foreground">Senast uppdaterad: 2026-06-03</p>
 
           <h2 className="text-xl font-semibold mt-8">1. Vilka vi är</h2>
           <p>
@@ -27,14 +27,24 @@ export default function PrivacyPage() {
             <li>Meddelanden mellan användare</li>
           </ul>
 
-          <h2 className="text-xl font-semibold mt-8">3. Hur vi använder AI</h2>
+          <h2 className="text-xl font-semibold mt-8">3. Datalagring</h2>
           <p>
-            Vi använder Claude AI (Anthropic) för att analysera CV:n, beräkna matchningspoäng
-            och generera intervjufrågor. Dina data skickas till Anthropics API enbart för att
-            utföra dessa tjänster och lagras inte av tredje part.
+            All data lagras inom EU (Irland) via Supabase och behandlas i enlighet med GDPR.
+            Supabase är certifierat enligt SOC 2 Type II och uppfyller EU:s krav på databehandling.
           </p>
 
-          <h2 className="text-xl font-semibold mt-8">4. GDPR</h2>
+          <h2 className="text-xl font-semibold mt-8">4. Hur vi använder AI</h2>
+          <p>
+            Vi använder Claude AI (Anthropic) för att analysera CV:n, beräkna matchningspoäng
+            och generera intervjufrågor. Ditt CV och dina uppgifter skickas till Anthropics API
+            enbart för att utföra dessa tjänster — Anthropic lagrar inte din data och använder
+            den inte för att träna AI-modeller. Detta framgår av{' '}
+            <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+              Anthropics integritetspolicy
+            </a>.
+          </p>
+
+          <h2 className="text-xl font-semibold mt-8">5. GDPR</h2>
           <p>
             Vi följer EU:s dataskyddsförordning (GDPR). Du har rätt att:
           </p>
@@ -45,7 +55,7 @@ export default function PrivacyPage() {
             <li>Invända mot viss databehandling</li>
           </ul>
 
-          <h2 className="text-xl font-semibold mt-8">5. Kontakt</h2>
+          <h2 className="text-xl font-semibold mt-8">6. Kontakt</h2>
           <p>
             Vid frågor om din integritet, kontakta oss på privacy@matchconnect.se.
           </p>

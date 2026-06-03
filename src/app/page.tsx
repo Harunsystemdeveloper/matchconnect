@@ -51,7 +51,7 @@ const features = [
   {
     icon: Shield,
     title: 'GDPR-säkert',
-    description: 'Dina data lagras säkert i Sverige och behandlas strikt enligt GDPR.',
+    description: 'Dina data lagras säkert inom EU (Irland) via Supabase och behandlas strikt enligt GDPR.',
     color: 'from-orange-500/20 to-amber-500/20',
     iconColor: 'text-orange-500',
   },
@@ -462,7 +462,7 @@ export default function HomePage() {
               {
                 id: 'faq-3',
                 q: 'Är mina uppgifter säkra?',
-                a: 'All data lagras i Sverige via Supabase och behandlas strikt enligt GDPR. Ditt CV delas aldrig med tredje part utan ditt samtycke, och Anthropic använder inte din data för att träna AI-modeller.',
+                a: 'All data lagras inom EU (Irland) via Supabase och behandlas strikt enligt GDPR. Ditt CV analyseras av Claude AI (Anthropic) enbart för matchning — Anthropic lagrar inte din data och använder den inte för att träna AI-modeller.',
               },
               {
                 id: 'faq-4',
