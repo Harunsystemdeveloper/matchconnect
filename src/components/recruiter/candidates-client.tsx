@@ -175,10 +175,13 @@ export function CandidatesClient({
       seeker?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
       app.cv?.skills?.some(s => s.toLowerCase().includes(search.toLowerCase())) ||
       seeker?.location?.toLowerCase().includes(search.toLowerCase())
+    const exp = app.cv?.experience_years ?? 0
     const matchExp = filterExp === 'all' ||
-      (filterExp === 'junior' && (app.cv?.experience_years ?? 0) <= 2) ||
-      (filterExp === 'mid' && (app.cv?.experience_years ?? 0) > 2 && (app.cv?.experience_years ?? 0) <= 5) ||
-      (filterExp === 'senior' && (app.cv?.experience_years ?? 0) > 5)
+      (filterExp === '0' && exp === 0) ||
+      (filterExp === '1-2' && exp >= 1 && exp <= 2) ||
+      (filterExp === '3-5' && exp >= 3 && exp <= 5) ||
+      (filterExp === '5-10' && exp >= 6 && exp <= 10) ||
+      (filterExp === '10+' && exp > 10)
     const matchStatus = filterStatus === 'all' || app.status === filterStatus
     return matchSearch && matchExp && matchStatus
   })
@@ -235,9 +238,11 @@ export function CandidatesClient({
           <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All erfarenhet</SelectItem>
-            <SelectItem value="junior">Junior (0-2 år)</SelectItem>
-            <SelectItem value="mid">Mid (2-5 år)</SelectItem>
-            <SelectItem value="senior">Senior (5+ år)</SelectItem>
+            <SelectItem value="0">Ingen erfarenhet</SelectItem>
+            <SelectItem value="1-2">1–2 år</SelectItem>
+            <SelectItem value="3-5">3–5 år</SelectItem>
+            <SelectItem value="5-10">5–10 år</SelectItem>
+            <SelectItem value="10+">10+ år</SelectItem>
           </SelectContent>
         </Select>
         <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v ?? 'all')}>

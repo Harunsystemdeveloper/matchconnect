@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { matchCandidates } from '@/lib/ai/claude'
 import { logAiDecision } from '@/lib/ai/audit-log'
 import { preScoreCandidates, selectTopCandidates } from '@/lib/ai/skill-similarity'
@@ -41,9 +41,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ matches: [], message: 'Inga ansökningar att matcha än.' })
   }
 
-  // Fetch cv_profiles separately (no direct FK from applications → cv_profiles)
+  // Fetch cv_profiles via admin to bypass RLS — recruiter can't read other users' cv_profiles
+  const admin = createAdminClient()
   const seekerIds = applications.map(a => a.seeker_id)
-  const { data: cvProfiles } = await supabase
+  const { data: cvProfiles } = await admin
     .from('cv_profiles')
     .select('seeker_id, skills, experience_years, ai_summary')
     .in('seeker_id', seekerIds)

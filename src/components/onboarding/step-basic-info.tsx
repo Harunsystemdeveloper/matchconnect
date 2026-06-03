@@ -74,7 +74,7 @@ export function StepBasicInfo({ profile, onNext }: { profile: Profile; onNext: (
             </Label>
             <Input
               id="headline"
-              placeholder={profile.user_type === 'recruiter' ? 'HR-chef på Acme AB' : 'Senior React-utvecklare'}
+              placeholder={profile.user_type === 'recruiter' ? 'Rekryteringschef på Acme AB' : 'T.ex. Sjuksköterska, Ekonom, Lagerarbetare, Lärare...'}
               className="h-11"
               {...register('headline')}
             />

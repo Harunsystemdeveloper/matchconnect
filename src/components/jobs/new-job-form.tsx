@@ -66,7 +66,7 @@ export default function NewJobForm() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Jobbtitel *</Label>
-            <Input id="title" placeholder="Senior Frontend Developer" {...register('title')} />
+            <Input id="title" placeholder="T.ex. Sjuksköterska, Ekonom, Lagerarbetare, Säljare..." {...register('title')} />
             {errors.title && <p className="text-sm text-destructive">{errors.title.message}</p>}
           </div>
           <div className="space-y-2">
@@ -76,11 +76,11 @@ export default function NewJobForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="requirements">Krav (valfri)</Label>
-            <Textarea id="requirements" rows={3} placeholder="3+ år React, TypeScript..." {...register('requirements')} />
+            <Textarea id="requirements" rows={3} placeholder="T.ex. Legitimerad sjuksköterska, B-körkort, 3+ års erfarenhet..." {...register('requirements')} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="skills_required">Kompetenser (kommaseparerade)</Label>
-            <Input id="skills_required" placeholder="React, TypeScript, Node.js" {...register('skills_required')} />
+            <Input id="skills_required" placeholder="T.ex. Patientvård, Bokföring, Truckkörning, Försäljning..." {...register('skills_required')} />
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">

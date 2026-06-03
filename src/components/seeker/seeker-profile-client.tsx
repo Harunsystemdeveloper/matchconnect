@@ -211,7 +211,7 @@ export function SeekerProfileClient({ profile, cvProfile: initialCv }: { profile
               </div>
               <div className="space-y-2">
                 <Label>Rubrik</Label>
-                <Input placeholder="Senior UX Designer" {...register('headline')} />
+                <Input placeholder="T.ex. Sjuksköterska, Ekonom, Säljare, Lärare..." {...register('headline')} />
               </div>
             </div>
             <div className="grid sm:grid-cols-2 gap-4">

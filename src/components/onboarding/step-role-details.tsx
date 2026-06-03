@@ -105,7 +105,7 @@ export function StepRoleDetails({ profile, onNext, onBack }: { profile: Profile;
                 <Label>Kompetenser</Label>
                 <div className="flex gap-2">
                   <Input
-                    placeholder="T.ex. React, Python, Projektledning..."
+                    placeholder="T.ex. Patientvård, Bokföring, Truckkörning, Försäljning, Pedagogik..."
                     value={skillInput}
                     onChange={(e) => setSkillInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addSkill() } }}

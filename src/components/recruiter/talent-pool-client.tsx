@@ -96,9 +96,11 @@ export function TalentPoolClient({
 
         const exp = c.experience_years ?? 0
         const matchExp = filterExp === 'all' ||
-          (filterExp === 'junior' && exp <= 2) ||
-          (filterExp === 'mid' && exp > 2 && exp <= 5) ||
-          (filterExp === 'senior' && exp > 5)
+          (filterExp === '0' && exp === 0) ||
+          (filterExp === '1-2' && exp >= 1 && exp <= 2) ||
+          (filterExp === '3-5' && exp >= 3 && exp <= 5) ||
+          (filterExp === '5-10' && exp >= 6 && exp <= 10) ||
+          (filterExp === '10+' && exp > 10)
 
         const matchLoc = filterLocation === 'all' ||
           c.seeker?.location === filterLocation
@@ -168,9 +170,11 @@ export function TalentPoolClient({
                 <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Alla nivåer</SelectItem>
-                  <SelectItem value="junior">Junior (0–2 år)</SelectItem>
-                  <SelectItem value="mid">Mid (2–5 år)</SelectItem>
-                  <SelectItem value="senior">Senior (5+ år)</SelectItem>
+                  <SelectItem value="0">Ingen erfarenhet</SelectItem>
+                  <SelectItem value="1-2">1–2 år</SelectItem>
+                  <SelectItem value="3-5">3–5 år</SelectItem>
+                  <SelectItem value="5-10">5–10 år</SelectItem>
+                  <SelectItem value="10+">10+ år</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -197,7 +201,7 @@ export function TalentPoolClient({
             <div>
               <p className="text-xs font-medium mb-1.5">Specifik kompetens</p>
               <Input
-                placeholder="ex. React, Python..."
+                placeholder="ex. Bokföring, Truckkörkort, Pedagogik..."
                 value={skillSearch}
                 onChange={e => setSkillSearch(e.target.value)}
                 className="h-8 text-xs"

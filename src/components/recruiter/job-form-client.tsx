@@ -200,12 +200,15 @@ export function JobFormClient({ recruiterId }: { recruiterId: string }) {
             <div className="space-y-2">
               <Label>Erfarenhetsnivå</Label>
               <Select onValueChange={(v) => setValue('experience_level', (v as string) ?? undefined)}>
-                <SelectTrigger><SelectValue placeholder="Välj nivå" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Välj erfarenhetsnivå" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="junior">Junior (0–2 år)</SelectItem>
-                  <SelectItem value="mid">Mid (2–5 år)</SelectItem>
-                  <SelectItem value="senior">Senior (5+ år)</SelectItem>
-                  <SelectItem value="lead">Lead / Principal</SelectItem>
+                  <SelectItem value="ingen">Ingen erfarenhet krävs</SelectItem>
+                  <SelectItem value="1-2">1–2 års erfarenhet</SelectItem>
+                  <SelectItem value="3-5">3–5 års erfarenhet</SelectItem>
+                  <SelectItem value="5-10">5–10 års erfarenhet</SelectItem>
+                  <SelectItem value="10+">10+ års erfarenhet</SelectItem>
+                  <SelectItem value="chef">Chefsroll / Ledare</SelectItem>
+                  <SelectItem value="executive">Ledningsgrupp / C-nivå</SelectItem>
                 </SelectContent>
               </Select>
             </div>
