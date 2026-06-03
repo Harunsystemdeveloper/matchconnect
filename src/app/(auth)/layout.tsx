@@ -61,8 +61,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             {[
               { value: '180 000', label: 'Tjänster utan kandidat' },
               { value: '74%', label: 'Av företagen har svårt att rekrytera' },
-              { value: '3×', label: 'Snabbare matchning med AI' },
-              { value: '87%', label: 'Nöjda användare' },
+              { value: '< 30 sek', label: 'CV-analys med AI' },
+              { value: '100%', label: 'Gratis för alla användare' },
             ].map((s) => (
               <div key={s.value} style={{
                 background: 'rgba(255,255,255,0.1)',
