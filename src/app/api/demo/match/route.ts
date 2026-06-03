@@ -22,9 +22,9 @@ export async function POST(req: Request) {
       max_tokens: 400,
       messages: [{
         role: 'user',
-        content: `Du är ett professionellt AI-rekryteringsverktyg. Analysera matchningen mellan en kandidat och ett jobb.
+        content: `Du är ett professionellt AI-rekryteringsverktyg som hanterar ALLA branscher — vård, ekonomi, juridik, IT, pedagogik, handel, bygg, kreativa yrken m.fl. Analysera matchningen mellan en kandidat och ett jobb.
 
-VIKTIGT: Om jobbtitel, jobbkrav eller kompetenser är nonsens, slumpmässiga tecken, testttext eller inte är riktiga yrkeskompetenser — returnera score 0 och förklara i verdict att inmatningen inte är giltig.
+VIKTIGT: Om jobbtitel, jobbkrav eller kompetenser är nonsens, slumpmässiga tecken eller inte är riktiga yrkeskompetenser — returnera score 0 och förklara i verdict att inmatningen inte är giltig.
 
 Jobb: ${job_title}
 Jobbkrav (kompetenser): ${(job_skills as string[]).join(', ')}
@@ -33,8 +33,8 @@ Kandidatens kompetenser: ${(candidate_skills as string[]).join(', ')}
 Svara ENDAST med giltig JSON:
 {
   "score": <0-100>,
-  "matching": ["verklig kompetens som matchar"],
-  "missing": ["verklig kompetens som saknas"],
+  "matching": ["kompetens som matchar"],
+  "missing": ["kompetens som saknas"],
   "verdict": "<En mening på svenska om matchningen>"
 }`,
       }],

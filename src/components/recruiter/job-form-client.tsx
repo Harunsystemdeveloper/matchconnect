@@ -80,7 +80,7 @@ export function JobFormClient({ recruiterId }: { recruiterId: string }) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="space-y-2">
             <Label>Jobbtitel *</Label>
-            <Input placeholder="Senior React-utvecklare" {...register('title')} />
+            <Input placeholder="t.ex. Sjuksköterska, Ekonom, Lärare, Säljare, Utvecklare..." {...register('title')} />
             {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
           </div>
 
@@ -135,7 +135,7 @@ export function JobFormClient({ recruiterId }: { recruiterId: string }) {
             <Label>Kompetenser som krävs</Label>
             <div className="flex gap-2">
               <Input
-                placeholder="React, TypeScript, Node.js..."
+                placeholder="t.ex. Patientvård, Bokföring, Pedagogik, Försäljning..."
                 value={skillInput}
                 onChange={e => setSkillInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSkill() } }}

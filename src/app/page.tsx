@@ -104,7 +104,7 @@ export default function HomePage() {
             <div className="flex flex-col items-start animate-in fade-in slide-in-from-bottom-4 duration-700">
               <Badge variant="secondary" className="mb-6 gap-1.5 px-4 py-1.5 text-xs font-medium border border-primary/20 bg-primary/5 text-primary">
                 <Sparkles className="h-3 w-3" />
-                AI-driven rekrytering · Byggt för den svenska arbetsmarknaden
+                AI-driven rekrytering · Alla branscher · Svenska arbetsmarknaden
               </Badge>
 
               <h1 className="text-5xl sm:text-6xl font-bold tracking-tight leading-[1.05] mb-6">

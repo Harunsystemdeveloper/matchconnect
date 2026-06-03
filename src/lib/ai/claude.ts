@@ -7,12 +7,12 @@ export async function analyzeCv(cvText: string) {
     model: 'claude-sonnet-4-7',
     max_tokens: 1500,
     system: `Du är en expert HR-analytiker och karriärcoach med djup kunskap om den svenska arbetsmarknaden.
-Din uppgift är att analysera CV-text och extrahera strukturerad information.
+Din uppgift är att analysera CV-text och extrahera strukturerad information. Du hanterar ALLA typer av yrken — IT, vård, ekonomi, juridik, handel, bygg, pedagogik, kreativa yrken, m.fl.
 
 Returnera ALLTID giltig JSON med exakt följande struktur:
 {
   "skills": ["kompetens1", "kompetens2"],
-  "technologies": ["tech1", "tech2"],
+  "tools_and_methods": ["verktyg1", "metod1"],
   "experience_years": 5,
   "experience_level": "junior|mid|senior|lead",
   "current_role": "Senaste jobbtitel",
@@ -24,8 +24,8 @@ Returnera ALLTID giltig JSON med exakt följande struktur:
 }
 
 Regler:
-- skills: tekniska och mjuka kompetenser (max 20)
-- technologies: specifika verktyg/programspråk/ramverk
+- skills: yrkeskompetenser och mjuka kompetenser relevanta för kandidatens bransch (max 20)
+- tools_and_methods: specifika verktyg, system, metoder eller program som används i yrket (t.ex. journalsystem för vård, CAD för ingenjörer, Excel för ekonomi, programspråk för IT)
 - experience_years: uppskattad total erfarenhet i år (heltal)
 - languages: alla språk som nämns i CV
 - Svara ENDAST med JSON, inga förklaringar utanför`,
@@ -58,7 +58,7 @@ export async function matchCandidates(job: {
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-7',
     max_tokens: 2000,
-    system: `Du är en expert rekryteringsanalytiker. Matcha kandidater mot jobbannonser med precision.
+    system: `Du är en expert rekryteringsanalytiker. Matcha kandidater mot jobbannonser med precision. Du hanterar ALLA branscher och yrkesroller — IT, vård, ekonomi, juridik, handel, pedagogik, bygg, kreativa yrken m.fl.
 
 Returnera ALLTID giltig JSON:
 {
@@ -99,7 +99,7 @@ export async function analyzeSkillGaps(job: {
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-7',
     max_tokens: 1000,
-    system: `Du är en karriärcoach. Analysera kompetensgap mellan kandidat och jobb.
+    system: `Du är en karriärcoach med bred branschkunskap. Analysera kompetensgap mellan kandidat och jobb. Du hanterar alla typer av yrken och branscher — IT, vård, ekonomi, juridik, handel, pedagogik, bygg, kreativa yrken m.fl.
 
 Returnera giltig JSON:
 {
@@ -129,20 +129,26 @@ export async function generateInterviewQuestions(job: {
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-7',
     max_tokens: 1200,
-    system: `Du är en erfaren rekryteringskonsult. Skapa personaliserade intervjufrågor.
+    system: `Du är en erfaren rekryteringskonsult med bred branschkunskap. Skapa personaliserade intervjufrågor anpassade till ALLA typer av yrken och branscher — IT, vård, ekonomi, juridik, handel, pedagogik, bygg, kreativa yrken m.fl.
 
 Returnera giltig JSON:
 {
   "questions": [
     {
       "question": "Frågetext på svenska",
-      "category": "teknisk|beteendemässig|situationell|motivation",
+      "category": "yrkesspecifik|beteendemässig|situationell|motivation",
       "why": "Varför denna fråga är relevant (kort)"
     }
   ]
 }
 
-Skapa 6-8 frågor. Blanda kategorier. Anpassa till kandidatens bakgrund OCH jobbets krav.
+Regler:
+- yrkesspecifik: frågor om konkreta färdigheter och kunskaper relevanta för just detta yrke (kan vara medicinska för vård, tekniska för IT, juridiska för jurister, pedagogiska för lärare osv.)
+- beteendemässig: hur kandidaten hanterat situationer tidigare
+- situationell: hur kandidaten skulle agera i hypotetiska scenarion
+- motivation: varför kandidaten vill ha jobbet och passar rollen
+
+Skapa 6-8 frågor. Blanda kategorier. Anpassa frågorna till kandidatens bakgrund OCH jobbets specifika krav.
 Svara ENDAST med JSON.`,
     messages: [{
       role: 'user',

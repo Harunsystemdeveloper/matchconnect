@@ -79,7 +79,7 @@ export function DemoMatcher() {
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Jobbtitel</label>
           <Input
-            placeholder="t.ex. Senior React-utvecklare"
+            placeholder="t.ex. Sjuksköterska, Ekonom, Lärare, Säljare..."
             value={jobTitle}
             onChange={e => setJobTitle(e.target.value)}
           />
@@ -89,7 +89,7 @@ export function DemoMatcher() {
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Jobbets krav <span className="text-muted-foreground font-normal">(tryck Enter)</span></label>
           <Input
-            placeholder="t.ex. React, TypeScript, Node.js..."
+            placeholder="t.ex. Patientvård, Excel, Projektledning, Juridik..."
             value={jobSkillInput}
             onChange={e => setJobSkillInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSkill(jobSkillInput, jobSkills, setJobSkills, setJobSkillInput) } }}
@@ -112,7 +112,7 @@ export function DemoMatcher() {
         <div className="space-y-1.5">
           <label className="text-sm font-medium">Dina kompetenser <span className="text-muted-foreground font-normal">(tryck Enter)</span></label>
           <Input
-            placeholder="t.ex. React, JavaScript, CSS..."
+            placeholder="t.ex. Kundservice, Redovisning, Omvårdnad, Pedagogik..."
             value={candidateSkillInput}
             onChange={e => setCandidateSkillInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSkill(candidateSkillInput, candidateSkills, setCandidateSkills, setCandidateSkillInput) } }}

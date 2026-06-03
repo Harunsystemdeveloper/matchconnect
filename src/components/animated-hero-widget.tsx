@@ -5,9 +5,9 @@ import { Brain, Loader2, CheckCircle } from 'lucide-react'
 import { CountUp } from '@/components/ui/count-up'
 
 const jobs = [
-  { role: 'Senior React Dev', co: 'Tech-startup', score: 94, color: 'text-emerald-500', bar: 'bg-emerald-500', badge: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' },
-  { role: 'Frontend Engineer', co: 'SaaS-bolag', score: 87, color: 'text-blue-500', bar: 'bg-blue-500', badge: 'bg-blue-500/10 text-blue-600 dark:text-blue-400' },
-  { role: 'UI/UX Developer', co: 'E-handel', score: 79, color: 'text-violet-500', bar: 'bg-violet-500', badge: 'bg-violet-500/10 text-violet-600 dark:text-violet-400' },
+  { role: 'Sjuksköterska', co: 'Karolinska Sjukhuset', score: 94, color: 'text-emerald-500', bar: 'bg-emerald-500', badge: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' },
+  { role: 'Ekonomiassistent', co: 'Finansbolag AB', score: 87, color: 'text-blue-500', bar: 'bg-blue-500', badge: 'bg-blue-500/10 text-blue-600 dark:text-blue-400' },
+  { role: 'Lärare årskurs 4–6', co: 'Stockholms stad', score: 82, color: 'text-violet-500', bar: 'bg-violet-500', badge: 'bg-violet-500/10 text-violet-600 dark:text-violet-400' },
 ]
 
 export function AnimatedHeroWidget() {
