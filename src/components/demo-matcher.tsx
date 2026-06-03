@@ -30,7 +30,21 @@ export function DemoMatcher() {
   }
 
   async function runDemo() {
-    if (!jobTitle || jobSkills.length === 0 || candidateSkills.length === 0) {
+    // Auto-add any text left in the inputs before validating
+    const finalJobSkills = [...jobSkills]
+    if (jobSkillInput.trim() && !finalJobSkills.includes(jobSkillInput.trim())) {
+      finalJobSkills.push(jobSkillInput.trim())
+      setJobSkills(finalJobSkills)
+      setJobSkillInput('')
+    }
+    const finalCandidateSkills = [...candidateSkills]
+    if (candidateSkillInput.trim() && !finalCandidateSkills.includes(candidateSkillInput.trim())) {
+      finalCandidateSkills.push(candidateSkillInput.trim())
+      setCandidateSkills(finalCandidateSkills)
+      setCandidateSkillInput('')
+    }
+
+    if (!jobTitle || finalJobSkills.length === 0 || finalCandidateSkills.length === 0) {
       setError('Fyll i jobbtitel, jobbkrav och dina kompetenser.')
       return
     }
@@ -41,7 +55,7 @@ export function DemoMatcher() {
     const res = await fetch('/api/demo/match', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ job_title: jobTitle, job_skills: jobSkills, candidate_skills: candidateSkills }),
+      body: JSON.stringify({ job_title: jobTitle, job_skills: finalJobSkills, candidate_skills: finalCandidateSkills }),
     })
     const data = await res.json()
     if (!res.ok) { setError(data.error); setLoading(false); return }
