@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { ParadoxStats } from '@/components/paradox-stats'
+import { DemoMatcher } from '@/components/demo-matcher'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import {
   Brain, Target, Users, TrendingUp, Shield,
@@ -346,8 +347,22 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Features ── */}
+      {/* ── Live Demo ── */}
       <section className="py-20 px-6 bg-muted/20">
+        <div className="mx-auto max-w-2xl">
+          <div className="text-center mb-10">
+            <Badge variant="outline" className="mb-4 text-primary border-primary/30">Prova direkt</Badge>
+            <h2 className="text-2xl sm:text-3xl font-bold">Se AI-matchningen i realtid</h2>
+            <p className="text-muted-foreground mt-3">
+              Inga konton. Inga kortuppgifter. Lägg in ett jobb och dina kompetenser — få ett poäng på 10 sekunder.
+            </p>
+          </div>
+          <DemoMatcher />
+        </div>
+      </section>
+
+      {/* ── Features ── */}
+      <section className="py-20 px-6">
         <div className="mx-auto max-w-5xl">
           <div className="text-center mb-12">
             <Badge variant="outline" className="mb-4 text-primary border-primary/30">Funktioner</Badge>
@@ -457,7 +472,7 @@ export default function HomePage() {
               {
                 id: 'faq-2',
                 q: 'Hur fungerar AI-matchningen?',
-                a: 'Claude AI (Anthropic) läser ditt CV och jobbannonsen, förstår kompetenser, erfarenhet och kontext — och beräknar ett matchningspoäng 0–100 med en transparent förklaring. Ingen svart låda.',
+                a: 'Claude AI (Anthropic) analyserar ditt CV och extraherar kompetenser, erfarenhetsnivå, utbildning och styrkor. Varje jobb får ett matchningspoäng 0–100. Du ser exakt vilka kompetenser som matchar, vad du saknar och konkreta rekommendationer — inte bara en siffra utan en fullständig analys.',
               },
               {
                 id: 'faq-3',
