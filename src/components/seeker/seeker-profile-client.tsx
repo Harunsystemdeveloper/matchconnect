@@ -286,6 +286,10 @@ export function SeekerProfileClient({ profile, cvProfile: initialCv }: { profile
           {cvProfile?.ai_summary && (
             <p className="text-sm text-muted-foreground italic">&quot;{cvProfile.ai_summary}&quot;</p>
           )}
+          <div className="rounded-lg bg-primary/5 border border-primary/20 px-3 py-2.5 text-xs text-primary flex items-start gap-2">
+              <span className="shrink-0 mt-0.5">💡</span>
+              <span><strong>Ju mer detaljerat CV, desto bättre matchning.</strong> AI:n läser texten ur PDF:en och extraherar dina kompetenser automatiskt — dessa jämförs sedan mot jobbens krav för att beräkna ditt matchningspoäng.</span>
+            </div>
           <input ref={cvInputRef} type="file" accept=".pdf,.txt" className="hidden" onChange={uploadAndAnalyzeCv} />
           <div className="flex gap-2">
             <Button

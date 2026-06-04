@@ -352,6 +352,10 @@ export function JobFormClient({ recruiterId }: { recruiterId: string }) {
           {/* Kompetenser */}
           <div className="space-y-2">
             <Label>Kompetenser som krävs</Label>
+            <div className="rounded-lg bg-primary/5 border border-primary/20 px-3 py-2.5 text-xs text-primary flex items-start gap-2">
+              <span className="shrink-0 mt-0.5">💡</span>
+              <span><strong>Viktigt för AI-matchningen:</strong> Ju fler kompetenser du anger, desto bättre rankar AI:n kandidaterna. En annons utan kompetenser ger alla sökande 0 i matchningspoäng.</span>
+            </div>
             <div className="flex gap-2">
               <Input
                 placeholder="t.ex. Patientvård, Bokföring, Pedagogik, Försäljning..."

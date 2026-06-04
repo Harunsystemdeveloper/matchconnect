@@ -232,14 +232,20 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {!cvProfile?.skills?.length ? (
-                    <p className="text-sm text-muted-foreground">
-                      Lägg till kompetenser i din profil för att se kompetensgap.{' '}
-                      <Link href="/seeker/profile" className="text-primary hover:underline">Uppdatera profil</Link>
-                    </p>
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">
+                        Lägg till kompetenser i din profil för att se kompetensgap.{' '}
+                        <Link href="/seeker/profile" className="text-primary hover:underline">Uppdatera profil</Link>
+                      </p>
+                      <p className="text-xs text-muted-foreground">💡 Ju mer detaljerat din profil är, desto mer träffsäker blir analysen.</p>
+                    </div>
                   ) : !skillGaps ? (
+                    <div className="space-y-3">
+                    <p className="text-xs text-muted-foreground">AI:n jämför dina kompetenser mot jobbets krav och visar exakt vad du har och vad du saknar.</p>
                     <Button onClick={analyzeGaps} disabled={loadingGaps} className="w-full">
                       {loadingGaps ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Analyserar...</> : 'Analysera mina kompetensgap'}
                     </Button>
+                    </div>
                   ) : (
                     <>
                       <div className="space-y-2">
@@ -341,9 +347,12 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
                     <p className="text-xs text-muted-foreground mt-1">Rekryteraren granskar din ansökan</p>
                   </div>
                   {application.match_score != null && (
-                    <div className="rounded-lg bg-muted/50 p-3">
+                    <div className="rounded-lg bg-muted/50 p-3 text-center">
                       <p className="text-2xl font-bold gradient-text">{application.match_score}%</p>
                       <p className="text-xs text-muted-foreground">AI-matchningspoäng</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {application.match_score >= 70 ? 'Stark matchning mot jobbets krav' : application.match_score >= 40 ? 'Delvis matchning — se kompetensgap' : 'Låg matchning mot jobbets krav'}
+                      </p>
                     </div>
                   )}
                   {application.ai_summary && (

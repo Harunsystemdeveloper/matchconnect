@@ -230,6 +230,14 @@ export function CandidatesClient({
         </div>
       </div>
 
+      {/* AI-förklaring */}
+      {apps.length > 0 && apps.every(a => a.match_score === null) && (
+        <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3 text-sm text-amber-800 dark:text-amber-300 flex items-start gap-2">
+          <span className="shrink-0 mt-0.5">💡</span>
+          <span>Kandidaterna har inget matchningspoäng ännu. Klicka <strong>AI-matcha</strong> för att låta Claude jämföra deras kompetenser mot jobbets krav och ge varje kandidat ett poäng 0–100.</span>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row flex-wrap gap-3">
         <div className="relative flex-1 min-w-0">
