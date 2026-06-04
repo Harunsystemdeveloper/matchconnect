@@ -12,6 +12,7 @@ import {
   Briefcase, FileText, Bookmark, TrendingUp, ArrowRight,
   User, MapPin, Star, AlertCircle, Sparkles
 } from 'lucide-react'
+
 import type { Profile, CvProfile, Application } from '@/types/database'
 
 interface JobRelation {
@@ -358,6 +359,26 @@ export function SeekerDashboard({ profile, cvProfile, applications, savedJobsCou
           </CardContent>
         </Card>
       )}
+
+      {/* Career coach CTA */}
+      <Card className="border border-primary/20 bg-gradient-to-br from-primary/5 to-violet-500/5">
+        <CardContent className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg shadow-primary/25 flex-shrink-0">
+              <Sparkles className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="font-semibold text-base">Din personliga AI-karriärcoach</p>
+              <p className="text-muted-foreground text-sm">Få råd om CV, jobbtips och intervjuförberedelse — anpassat efter din profil.</p>
+            </div>
+          </div>
+          <Button asChild className="flex-shrink-0">
+            <Link href="/seeker/coach">
+              Chatta med coachen <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Browse jobs CTA */}
       <Card className="gradient-primary text-white">

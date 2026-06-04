@@ -54,6 +54,7 @@ export function Navbar() {
     { href: '/seeker/jobs', label: 'Hitta jobb' },
     { href: '/seeker/applications', label: 'Ansökningar' },
     { href: '/seeker/saved', label: 'Sparade' },
+    { href: '/seeker/coach', label: '✨ Karriärcoach' },
     { href: '/messages', label: 'Meddelanden' },
   ]
 
