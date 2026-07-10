@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  LineChart, Line, PieChart, Pie, Cell, CartesianGrid, Legend
+  LineChart, Line, PieChart, Pie, Cell, CartesianGrid
 } from 'recharts'
 import {
   TrendingUp, Users, Briefcase, Star, Eye, Clock,

@@ -22,14 +22,12 @@ export async function sendNewApplicationEmail({
   seekerName,
   jobTitle,
   jobId,
-  applicationId,
 }: {
   recruiterEmail: string
   recruiterName: string
   seekerName: string
   jobTitle: string
   jobId: string
-  applicationId: string
 }) {
   await send({
     from: FROM,

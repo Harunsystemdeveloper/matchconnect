@@ -53,7 +53,6 @@ export async function POST(req: Request) {
         seekerName: seeker?.full_name ?? 'En kandidat',
         jobTitle: job.title,
         jobId: job_id,
-        applicationId: application.id,
       })
     } catch (err) {
       console.error('[apply] email error:', err)

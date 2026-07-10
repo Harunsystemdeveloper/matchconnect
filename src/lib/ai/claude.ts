@@ -171,12 +171,6 @@ Svara ENDAST med JSON.`,
   return JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
 }
 
-// Spec-compatible function aliases used by the API routes
-
-export async function analyzeCV(cvText: string) {
-  return analyzeCv(cvText)
-}
-
 export async function calculateMatchScore(cvText: string, jobDescription: string, jobRequirements: string) {
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
@@ -197,35 +191,6 @@ ${jobDescription}
 
 Requirements:
 ${jobRequirements}
-
-Return only valid JSON, no markdown.`,
-      },
-    ],
-  })
-
-  const text = message.content[0].type === 'text' ? message.content[0].text : ''
-  return JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
-}
-
-export async function identifySkillGaps(cvText: string, jobDescription: string, skillsRequired: string[]) {
-  const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 1024,
-    messages: [
-      {
-        role: 'user',
-        content: `Identify skill gaps between this candidate and job. Return a JSON object with:
-- skill_gaps: string[] (skills the candidate is missing or needs improvement in)
-- recommendation: string (brief advice for the candidate)
-
-CV:
-${cvText}
-
-Job Description:
-${jobDescription}
-
-Required Skills:
-${skillsRequired.join(', ')}
 
 Return only valid JSON, no markdown.`,
       },

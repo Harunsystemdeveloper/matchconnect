@@ -44,11 +44,9 @@ interface RecruiterJob {
 export function TalentPoolClient({
   candidates,
   recruiterJobs,
-  recruiterId,
 }: {
   candidates: Candidate[]
   recruiterJobs: RecruiterJob[]
-  recruiterId: string
 }) {
   const [search, setSearch] = useState('')
   const [filterExp, setFilterExp] = useState('all')

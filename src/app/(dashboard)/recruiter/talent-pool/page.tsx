@@ -55,7 +55,6 @@ export default async function TalentPoolPage() {
     <TalentPoolClient
       candidates={normalised}
       recruiterJobs={recruiterJobs ?? []}
-      recruiterId={user.id}
     />
   )
 }

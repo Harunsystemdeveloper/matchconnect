@@ -9,7 +9,7 @@ import { ScrollReveal } from '@/components/scroll-reveal'
 import { AnimatedHeroWidget } from '@/components/animated-hero-widget'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import {
-  Brain, Target, Users, TrendingUp, Shield,
+  Target, Users, TrendingUp, Shield,
   ArrowRight, CheckCircle, Zap, Sparkles,
   FileText, BarChart3, MessageSquare, AlertTriangle,
   Building2, TrendingDown

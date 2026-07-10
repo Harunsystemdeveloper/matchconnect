@@ -500,7 +500,6 @@ export function CandidatesClient({
                       <InterviewScheduleButton
                         applicationId={app.id}
                         seekerId={seeker?.id ?? ''}
-                        recruiterId={recruiterId}
                       />
                     </div>
                   </div>

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Send, Loader2, Sparkles, RotateCcw, User } from 'lucide-react'
+import { Send, Loader2, Sparkles, RotateCcw } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Profile } from '@/types/database'
 

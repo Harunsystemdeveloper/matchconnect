@@ -13,10 +13,9 @@ import type { InterviewSchedule } from '@/types/database'
 interface Props {
   applicationId: string
   seekerId: string
-  recruiterId: string
 }
 
-export function InterviewScheduleButton({ applicationId, seekerId, recruiterId }: Props) {
+export function InterviewScheduleButton({ applicationId, seekerId }: Props) {
   const [open, setOpen] = useState(false)
   const [schedule, setSchedule] = useState<InterviewSchedule | null>(null)
   const [loading, setLoading] = useState(false)
