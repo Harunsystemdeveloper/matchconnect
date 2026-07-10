@@ -13,6 +13,7 @@ import {
   Brain, Target, MessageSquare, CheckCircle, XCircle, ArrowLeft, Calendar, AlertCircle, Share2
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { daysUntil } from '@/lib/utils'
 import { toast } from 'sonner'
 
 interface Props {
@@ -162,7 +163,7 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
                   return null
                 })()}
                 {job.deadline && (() => {
-                  const days = Math.ceil((new Date(job.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                  const days = daysUntil(job.deadline)
                   const urgent = days <= 3
                   return (
                     <span className={`flex items-center gap-1 text-sm px-2 py-0.5 rounded-full ${

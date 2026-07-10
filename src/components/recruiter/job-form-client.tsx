@@ -291,7 +291,7 @@ export function JobFormClient({ recruiterId }: { recruiterId: string }) {
 
             {salaryModel === 'ök' && (
               <p className="text-xs text-muted-foreground italic">
-                Lönen visas som "Enligt överenskommelse" för kandidaten. Du kan beskriva ersättningsnivån i jobbeskrivningen.
+                Lönen visas som &quot;Enligt överenskommelse&quot; för kandidaten. Du kan beskriva ersättningsnivån i jobbeskrivningen.
               </p>
             )}
           </div>

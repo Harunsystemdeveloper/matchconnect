@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MapPin, Globe, Calendar, Briefcase, AlertCircle, ArrowLeft } from 'lucide-react'
 import type { Metadata } from 'next'
+import { daysUntil } from '@/lib/utils'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -53,7 +54,7 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
     .single()
 
   const deadline = job.deadline ? new Date(job.deadline) : null
-  const daysLeft = deadline ? Math.ceil((deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : null
+  const daysLeft = job.deadline ? daysUntil(job.deadline) : null
   const urgentDeadline = daysLeft !== null && daysLeft <= 3
 
   return (

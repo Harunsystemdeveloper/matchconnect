@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
@@ -25,15 +25,16 @@ export function CandidateCrmPanel({ seekerId, seekerName }: Props) {
   const [tagInput, setTagInput] = useState('')
   const [saving, setSaving] = useState(false)
 
-  const loadNotes = useCallback(async () => {
-    setLoading(true)
-    const res = await fetch(`/api/candidate-notes?seeker_id=${seekerId}`)
-    const data = await res.json()
-    setNotes(data.notes ?? [])
-    setLoading(false)
+  useEffect(() => {
+    async function loadNotes() {
+      setLoading(true)
+      const res = await fetch(`/api/candidate-notes?seeker_id=${seekerId}`)
+      const data = await res.json()
+      setNotes(data.notes ?? [])
+      setLoading(false)
+    }
+    loadNotes()
   }, [seekerId])
-
-  useEffect(() => { loadNotes() }, [loadNotes])
 
   async function saveNote() {
     if (!newNote.trim()) return
