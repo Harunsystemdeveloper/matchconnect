@@ -55,11 +55,18 @@ export function JobEditClient({ job }: { job: Job }) {
   })
 
   function addSkill() {
-    const s = skillInput.trim().toLowerCase()
-    if (s && !skills.includes(s) && skills.length < 20) {
-      setSkills([...skills, s])
-      setSkillInput('')
-    }
+    // Dela på komma/semikolon så "ekonomihantering, juridik" blir två separata
+    // kompetenser istället för en enda hopklistrad tagg som aldrig matchar något.
+    const parts = skillInput.split(/[,;]/).map(s => s.trim().toLowerCase()).filter(Boolean)
+    if (parts.length === 0) return
+    setSkills(prev => {
+      const next = [...prev]
+      for (const p of parts) {
+        if (!next.includes(p) && next.length < 20) next.push(p)
+      }
+      return next
+    })
+    setSkillInput('')
   }
 
   async function onSubmit(data: z.infer<typeof schema>) {
