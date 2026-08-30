@@ -100,10 +100,18 @@ export async function POST(request: Request) {
 
     // Update match scores on existing applications only — never create new ones
     for (const match of result.matches) {
+      const breakdown = match.category_scores ? {
+        category_scores: match.category_scores,
+        category_reasoning: match.category_reasoning ?? {},
+        top_positive_factors: match.top_positive_factors ?? [],
+        top_gaps: match.top_gaps ?? [],
+      } : null
+
       const { data: updatedApp } = await supabase
         .from('applications')
         .update({
           match_score: match.score,
+          match_breakdown: breakdown,
           ai_summary: match.summary,
           skill_gaps: match.missing_skills,
           updated_at: new Date().toISOString(),
@@ -121,6 +129,7 @@ export async function POST(request: Request) {
         applicationId: updatedApp?.id,
         score: match.score,
         decisionSummary: match.summary,
+        decisionData: breakdown ?? undefined,
         outputSkillsMatched: match.matching_skills,
         outputSkillsMissing: match.missing_skills,
       })

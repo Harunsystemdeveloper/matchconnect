@@ -1,5 +1,6 @@
+
 import { createClient } from '@supabase/supabase-js'
-import type { AiDecisionType } from '@/types/database'
+import type { AiDecisionType, MatchBreakdown } from '@/types/database'
 
 // Uses service role to bypass RLS for logging — logs are read-only for users
 function getServiceClient() {
@@ -17,6 +18,7 @@ interface LogAiDecisionParams {
   applicationId?: string
   score?: number
   decisionSummary?: string
+  decisionData?: MatchBreakdown
   inputSkills?: string[]
   outputSkillsMatched?: string[]
   outputSkillsMissing?: string[]
@@ -33,10 +35,11 @@ export async function logAiDecision(params: LogAiDecisionParams): Promise<void> 
     application_id: params.applicationId ?? null,
     score: params.score ?? null,
     decision_summary: params.decisionSummary ?? null,
+    decision_data: params.decisionData ?? null,
     input_skills: params.inputSkills ?? null,
     output_skills_matched: params.outputSkillsMatched ?? null,
     output_skills_missing: params.outputSkillsMissing ?? null,
-    model_id: 'claude-sonnet-4-7',
+    model_id: 'claude-sonnet-4-6',
   })
 
   // Logging must never crash the main flow — only log errors

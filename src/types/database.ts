@@ -75,11 +75,26 @@ export interface CvProfile {
   created_at: string
 }
 
+export interface MatchCategoryScores {
+  kompetens: number
+  erfarenhet: number
+  utbildning: number
+  kultur_mjuka_kompetenser: number
+}
+
+export interface MatchBreakdown {
+  category_scores: MatchCategoryScores
+  category_reasoning: Record<keyof MatchCategoryScores, string>
+  top_positive_factors: string[]
+  top_gaps: string[]
+}
+
 export interface Application {
   id: string
   job_id: string
   seeker_id: string
   match_score: number | null
+  match_breakdown: MatchBreakdown | null
   ai_summary: string | null
   skill_gaps: string[] | null
   interview_questions: string[] | null
@@ -227,6 +242,7 @@ export interface AiDecisionLog {
   application_id: string | null
   score: number | null
   decision_summary: string | null
+  decision_data: MatchBreakdown | null
   input_skills: string[] | null
   output_skills_matched: string[] | null
   output_skills_missing: string[] | null

@@ -57,13 +57,21 @@ export async function matchCandidates(job: {
 
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 2000,
-    system: `Du är en expert rekryteringsanalytiker. Matcha kandidater mot jobbannonser med precision.
+    max_tokens: 4000,
+    system: `Du är en expert rekryteringsanalytiker. Matcha kandidater mot jobbannonser med precision OCH ge en strukturerad, granskningsbar förklaring till varje poäng — inte bara ett tal.
 
 VIKTIGA REGLER:
 - "matching_skills" och "missing_skills" får ENDAST innehålla kompetenser från jobbets "Krav"-lista
 - Lägg ALDRIG till egna kompetenser som inte finns i Krav-listan
 - Om Krav-listan är tom, sätt båda till tomma arrayer
+- category_scores ska vara fyra delpoäng (0-100) som tillsammans motiverar helhetspoängen "score":
+  - kompetens: hur väl kandidatens kompetenser täcker jobbets krav
+  - erfarenhet: om antal års erfarenhet och nivå passar rollen
+  - utbildning: relevans av utbildning/bakgrund för rollen (sätt 50 om okänt/ej angivet -- gissa inte)
+  - kultur_mjuka_kompetenser: indikationer på mjuka kompetenser/kulturpassning utifrån sammanfattningen (sätt 50 om inget underlag finns)
+- top_positive_factors: max 3 konkreta, faktabaserade styrkor (inte generiska fraser)
+- top_gaps: max 3 konkreta gap/risker (inte generiska fraser) -- tom array om inga finns
+- category_reasoning: en kort mening (max ~15 ord) per kategori som motiverar just den delpoängen
 
 Returnera ALLTID giltig JSON:
 {
@@ -71,14 +79,18 @@ Returnera ALLTID giltig JSON:
     {
       "candidate_id": "uuid",
       "score": 85,
-      "summary": "Kort motivering (1-2 meningar) på svenska",
+      "summary": "Kort helhetsmotivering (1-2 meningar) på svenska",
       "matching_skills": ["skill1", "skill2"],
-      "missing_skills": ["skill3"]
+      "missing_skills": ["skill3"],
+      "category_scores": { "kompetens": 90, "erfarenhet": 80, "utbildning": 50, "kultur_mjuka_kompetenser": 50 },
+      "category_reasoning": { "kompetens": "...", "erfarenhet": "...", "utbildning": "...", "kultur_mjuka_kompetenser": "..." },
+      "top_positive_factors": ["faktor1", "faktor2", "faktor3"],
+      "top_gaps": ["gap1", "gap2"]
     }
   ]
 }
 
-Poängsättning (0-100):
+Poängsättning för "score" (0-100), en sammanvägning av delpoängen med tyngdpunkt på kompetens och erfarenhet:
 - 90-100: Utmärkt match, uppfyller alla krav
 - 70-89: Bra match, uppfyller de flesta krav
 - 50-69: Godkänd match, uppfyller grundkraven

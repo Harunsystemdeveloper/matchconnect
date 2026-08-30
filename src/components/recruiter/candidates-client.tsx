@@ -16,18 +16,22 @@ import {
 } from '@/components/ui/dialog'
 import {
   Loader2, Star, StarOff, MessageSquare, Search,
-  Brain, ArrowLeft, Users, MapPin, LayoutList, Columns, Download, StickyNote, Pencil, ClipboardCheck
+  Brain, ArrowLeft, Users, MapPin, LayoutList, Columns, Download, StickyNote, Pencil, ClipboardCheck,
+  ChevronDown, ChevronUp, Sparkles
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { CandidateCrmPanel } from '@/components/recruiter/candidate-crm-panel'
 import { InterviewScheduleButton } from '@/components/recruiter/interview-schedule-button'
 import { InterviewScorecardPanel } from '@/components/recruiter/interview-scorecard-panel'
+import { MatchBreakdownView } from '@/components/recruiter/match-breakdown-view'
+import type { MatchBreakdown } from '@/types/database'
 
 interface Candidate {
   id: string
   status: string
   match_score: number | null
+  match_breakdown: MatchBreakdown | null
   ai_summary: string | null
   skill_gaps: string[] | null
   interview_questions: string[] | null
@@ -72,6 +76,7 @@ export function CandidatesClient({
   const [crmCandidate, setCrmCandidate] = useState<{ id: string; name: string } | null>(null)
   const [scorecardOpen, setScorecardOpen] = useState(false)
   const [scorecardCandidate, setScorecardCandidate] = useState<{ applicationId: string; seekerId: string; name: string; questions: string[] } | null>(null)
+  const [expandedBreakdown, setExpandedBreakdown] = useState<Set<string>>(new Set())
   const [overrideOpen, setOverrideOpen] = useState(false)
   const [overrideApp, setOverrideApp] = useState<{ id: string; name: string; currentScore: number | null } | null>(null)
   const [overrideScore, setOverrideScore] = useState<number>(50)
@@ -117,6 +122,15 @@ export function CandidatesClient({
   function openScorecard(applicationId: string, seekerId: string, name: string, questions: string[] | null) {
     setScorecardCandidate({ applicationId, seekerId, name, questions: questions ?? [] })
     setScorecardOpen(true)
+  }
+
+  function toggleBreakdown(appId: string) {
+    setExpandedBreakdown(prev => {
+      const next = new Set(prev)
+      if (next.has(appId)) next.delete(appId)
+      else next.add(appId)
+      return next
+    })
   }
 
   function exportCsv() {
@@ -442,6 +456,24 @@ export function CandidatesClient({
 
                       {app.ai_summary && (
                         <p className="text-sm text-muted-foreground mt-2 italic">{app.ai_summary}</p>
+                      )}
+
+                      {app.match_breakdown && (
+                        <div className="mt-2">
+                          <button
+                            onClick={() => toggleBreakdown(app.id)}
+                            className="text-xs text-primary flex items-center gap-1 font-medium hover:underline"
+                          >
+                            <Sparkles className="h-3 w-3" />
+                            Varför denna poäng?
+                            {expandedBreakdown.has(app.id) ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                          </button>
+                          {expandedBreakdown.has(app.id) && (
+                            <div className="mt-2">
+                              <MatchBreakdownView breakdown={app.match_breakdown} />
+                            </div>
+                          )}
+                        </div>
                       )}
 
                       <div className="flex flex-wrap gap-2 mt-3">
