@@ -201,6 +201,19 @@ export interface InterviewScorecard {
   updated_at: string
 }
 
+export interface CandidateInvite {
+  id: string
+  recruiter_id: string
+  job_id: string
+  seeker_id: string
+  conversation_id: string
+  message_id: string | null
+  match_score: number | null
+  opened_at: string | null
+  responded_at: string | null
+  created_at: string
+}
+
 // Joined types for UI
 export interface ApplicationWithJob extends Application {
   job: Job & { company_profile?: CompanyProfile }

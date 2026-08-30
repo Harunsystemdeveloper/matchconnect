@@ -25,6 +25,7 @@ import { CandidateCrmPanel } from '@/components/recruiter/candidate-crm-panel'
 import { InterviewScheduleButton } from '@/components/recruiter/interview-schedule-button'
 import { InterviewScorecardPanel } from '@/components/recruiter/interview-scorecard-panel'
 import { MatchBreakdownView } from '@/components/recruiter/match-breakdown-view'
+import { InviteCandidateDialog } from '@/components/recruiter/invite-candidate-dialog'
 import type { MatchBreakdown } from '@/types/database'
 
 interface Candidate {
@@ -325,11 +326,16 @@ export function CandidatesClient({
                       </Badge>
                     ))}
                   </div>
-                  <Button size="sm" variant="outline" className="w-full h-7 text-xs" asChild>
-                    <Link href={`/messages?user=${p.id}`}>
-                      <MessageSquare className="mr-1 h-3 w-3" />Bjud in att söka
-                    </Link>
-                  </Button>
+                  <InviteCandidateDialog
+                    seekerId={p.id}
+                    seekerName={p.full_name ?? 'Kandidat'}
+                    jobs={[{ id: job.id, title: job.title }]}
+                    trigger={
+                      <Button size="sm" variant="outline" className="w-full h-7 text-xs">
+                        <MessageSquare className="mr-1 h-3 w-3" />Bjud in att söka
+                      </Button>
+                    }
+                  />
                 </div>
               )
             })}

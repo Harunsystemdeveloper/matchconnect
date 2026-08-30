@@ -59,6 +59,16 @@ export function MessagesClient({
       .order('created_at', { ascending: true })
       .then(({ data }) => setMessages(data ?? []))
 
+    // Steg 8: spåra "öppnad" för en ev. kandidat-inbjudan i denna konversation.
+    // No-op (tystnad) om det inte är en inbjudan — hanteras server-side.
+    if (currentUser.user_type === 'job_seeker') {
+      fetch('/api/candidate-invites/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversation_id: activeConv, action: 'opened' }),
+      }).catch(() => {})
+    }
+
     // Subscribe to new messages from others (own messages are added optimistically)
     const channel = supabase
       .channel(`messages:${activeConv}`)
@@ -121,6 +131,15 @@ export function MessagesClient({
       // Replace optimistic placeholder with real message from DB
       setMessages(prev => prev.map(m => m.id === tmpId ? (inserted as Message) : m))
       supabase.from('conversations').update({ last_message_at: new Date().toISOString() }).eq('id', activeConv)
+
+      // Steg 8: spåra "svarat" om detta är en kandidat som svarar på en inbjudan.
+      if (currentUser.user_type === 'job_seeker') {
+        fetch('/api/candidate-invites/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ conversation_id: activeConv, action: 'responded' }),
+        }).catch(() => {})
+      }
     }
     setSending(false)
   }

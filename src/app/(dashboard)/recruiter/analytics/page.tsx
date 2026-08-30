@@ -61,6 +61,12 @@ export default async function AnalyticsPage() {
     .order('created_at', { ascending: false })
     .limit(500)
 
+  // Steg 8: kandidataktivering — öppnings- och svarsfrekvens på utskick till talangpoolen.
+  const { data: invites } = await supabase
+    .from('candidate_invites')
+    .select('id, opened_at, responded_at, created_at')
+    .eq('recruiter_id', user.id)
+
   return (
     <RecruiterAnalyticsClient
       jobs={jobs ?? []}
@@ -69,6 +75,7 @@ export default async function AnalyticsPage() {
       shortlistEvents={shortlistRows ?? []}
       interviewEvents={interviewRows ?? []}
       aiCostLogs={aiCostLogs ?? []}
+      invites={invites ?? []}
     />
   )
 }

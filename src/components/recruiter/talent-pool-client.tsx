@@ -14,6 +14,7 @@ import {
   Search, MapPin, MessageSquare, Users, Brain,
   Briefcase, GraduationCap, Globe, SlidersHorizontal, X
 } from 'lucide-react'
+import { InviteCandidateDialog } from '@/components/recruiter/invite-candidate-dialog'
 
 interface Candidate {
   seeker_id: string
@@ -350,18 +351,11 @@ export function TalentPoolClient({
                         </Link>
                       </Button>
                       {recruiterJobs.length > 0 && (
-                        <Select onValueChange={jobId => {
-                          window.location.href = `/recruiter/jobs/${jobId}/candidates`
-                        }}>
-                          <SelectTrigger className="h-8 text-xs w-32">
-                            <SelectValue placeholder="Bjud in till..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {recruiterJobs.map(j => (
-                              <SelectItem key={j.id} value={j.id}>{j.title}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <InviteCandidateDialog
+                          seekerId={seeker.id}
+                          seekerName={seeker.full_name ?? 'Kandidat'}
+                          jobs={recruiterJobs}
+                        />
                       )}
                     </div>
                   </div>

@@ -10,7 +10,7 @@ import {
 } from 'recharts'
 import {
   TrendingUp, Users, Briefcase, Star, Eye, Clock,
-  CheckCircle2, XCircle, BarChart2, Timer, Gauge, PiggyBank, Info, DollarSign
+  CheckCircle2, XCircle, BarChart2, Timer, Gauge, PiggyBank, Info, DollarSign, Send, MailOpen, Reply
 } from 'lucide-react'
 
 interface Job {
@@ -42,6 +42,13 @@ interface AiCostLog {
   input_tokens: number | null
   output_tokens: number | null
   estimated_cost_usd: number | null
+  created_at: string
+}
+
+interface InviteRow {
+  id: string
+  opened_at: string | null
+  responded_at: string | null
   created_at: string
 }
 
@@ -87,6 +94,7 @@ export function RecruiterAnalyticsClient({
   shortlistEvents = [],
   interviewEvents = [],
   aiCostLogs = [],
+  invites = [],
 }: {
   jobs: Job[]
   applications: Application[]
@@ -94,6 +102,7 @@ export function RecruiterAnalyticsClient({
   shortlistEvents?: TimeEvent[]
   interviewEvents?: TimeEvent[]
   aiCostLogs?: AiCostLog[]
+  invites?: InviteRow[]
 }) {
   // Veckovis ansökningar (senaste 8 veckor)
   const weeklyData = useMemo(() => {
@@ -200,6 +209,13 @@ export function RecruiterAnalyticsClient({
   const sonnetCalls = useMemo(() => aiCostLogs.filter(l => l.model_id.includes('sonnet')).length, [aiCostLogs])
   const haikuCalls = useMemo(() => aiCostLogs.filter(l => l.model_id.includes('haiku')).length, [aiCostLogs])
   const avgCostPerMatch = aiCostLogs.length > 0 ? totalAiCost / aiCostLogs.length : null
+
+  // ── Steg 8: Kandidataktivering ──
+  const inviteCount = invites.length
+  const openedCount = invites.filter(i => i.opened_at).length
+  const respondedCount = invites.filter(i => i.responded_at).length
+  const openRate = inviteCount > 0 ? Math.round((openedCount / inviteCount) * 100) : null
+  const responseRate = inviteCount > 0 ? Math.round((respondedCount / inviteCount) * 100) : null
 
   // KPI-nyckeltal
   const totalApps = applications.length
@@ -400,6 +416,34 @@ export function RecruiterAnalyticsClient({
               <Info className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
               Verklig kostnad baserad på faktisk token-användning per AI-anrop, inte en uppskattning. Kandidater under matchningströskeln och cachade omkörningar (oförändrat underlag) kostar ingenting alls och räknas inte in här.
             </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Steg 8: Kandidataktivering (passiv talangpool-outreach) */}
+      {inviteCount > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Send className="h-4 w-4 text-primary" />
+              Kandidataktivering — utskick till talangpoolen
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <p className="text-xl font-bold">{inviteCount}</p>
+                <p className="text-xs text-muted-foreground flex items-center gap-1"><Send className="h-3 w-3" />Skickade inbjudningar</p>
+              </div>
+              <div>
+                <p className="text-xl font-bold">{openRate}%</p>
+                <p className="text-xs text-muted-foreground flex items-center gap-1"><MailOpen className="h-3 w-3" />Öppningsfrekvens</p>
+              </div>
+              <div>
+                <p className="text-xl font-bold">{responseRate}%</p>
+                <p className="text-xs text-muted-foreground flex items-center gap-1"><Reply className="h-3 w-3" />Svarsfrekvens</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}

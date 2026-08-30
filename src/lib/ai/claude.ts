@@ -348,6 +348,41 @@ Regler:
   return JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
 }
 
+/**
+ * Steg 8 -- genererar ett kort, personligt utskick till en kandidat i talangpoolen som
+ * inte sökt jobbet själv (passiv aktivering). Baseras på faktiska matchande/saknade
+ * kompetenser -- hittar aldrig på uppgifter om kandidaten.
+ */
+export async function generateOutreachMessage(
+  job: { title: string; description: string },
+  candidate: { name: string; skills: string[]; experience_years: number | null },
+  matchingSkills: string[],
+  companyName: string
+) {
+  const message = await anthropic.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 500,
+    system: `Du är en rekryterare som skriver ett kort, personligt första-kontakt-meddelande till en kandidat som INTE sökt jobbet själv (du hittade dem proaktivt i talangpoolen).
+
+Regler:
+- Max 4-5 meningar, vänlig och professionell ton på svenska, inte påträngande
+- Nämn 1-2 KONKRETA kompetenser kandidaten faktiskt har som matchar rollen (från matchande kompetenser) -- hitta aldrig på egna
+- Nämn ALDRIG saknade kompetenser i meddelandet -- det är bara internt underlag
+- Avsluta med en tydlig, lågtröskel fråga (t.ex. om de är öppna för att höra mer)
+- Hitta aldrig på uppgifter om kandidaten som inte finns i underlaget
+
+Returnera ENDAST JSON: { "message": "meddelandetext" }`,
+    messages: [{
+      role: 'user',
+      content: `Företag: ${companyName}\nJobb: ${job.title}\nBeskrivning: ${job.description}\n\nKandidat: ${candidate.name}\nKompetenser: ${candidate.skills.join(', ')}\nErfarenhet: ${candidate.experience_years ?? 'okänt'} år\n\nMatchande kompetenser mot jobbet: ${matchingSkills.join(', ') || '(inga specifika, generell relevans)'}`,
+    }],
+  })
+
+  const text = message.content[0].type === 'text' ? message.content[0].text : ''
+  const parsed = JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
+  return { message: parsed.message as string, usage: message.usage }
+}
+
 export async function summarizeCandidate(cvText: string, matchScore: number, skillGaps: string[]) {
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
