@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import { Loader2, Download, Trash2, Shield, FileJson, AlertTriangle, Eye, Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { DemographicsConsentCard } from '@/components/settings/demographics-consent-card'
 
 export default function PrivacySettingsPage() {
   const router = useRouter()
@@ -107,6 +108,10 @@ export default function PrivacySettingsPage() {
           ))}
         </CardContent>
       </Card>
+
+      <Separator />
+
+      <DemographicsConsentCard />
 
       <Separator />
 

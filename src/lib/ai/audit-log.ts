@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js'
-import type { AiDecisionType, MatchBreakdown } from '@/types/database'
+import type { AiDecisionType } from '@/types/database'
 
 // Uses service role to bypass RLS for logging — logs are read-only for users
 function getServiceClient() {
@@ -11,14 +11,14 @@ function getServiceClient() {
 }
 
 interface LogAiDecisionParams {
-  subjectUserId: string
+  subjectUserId?: string | null
   triggeredByUserId: string
   decisionType: AiDecisionType
   jobId?: string
   applicationId?: string
   score?: number
   decisionSummary?: string
-  decisionData?: MatchBreakdown
+  decisionData?: Record<string, unknown>
   inputSkills?: string[]
   outputSkillsMatched?: string[]
   outputSkillsMissing?: string[]
@@ -28,7 +28,7 @@ export async function logAiDecision(params: LogAiDecisionParams): Promise<void> 
   const supabase = getServiceClient()
 
   const { error } = await supabase.from('ai_decision_logs').insert({
-    subject_user_id: params.subjectUserId,
+    subject_user_id: params.subjectUserId ?? null,
     triggered_by_user_id: params.triggeredByUserId,
     decision_type: params.decisionType,
     job_id: params.jobId ?? null,

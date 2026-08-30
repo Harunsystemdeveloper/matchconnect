@@ -16,6 +16,7 @@ export async function GET() {
     { data: messages },
     { data: companyProfile },
     { data: aiDecisionLogs },
+    { data: demographics },
   ] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase.from('cv_profiles').select('*').eq('seeker_id', user.id).maybeSingle(),
@@ -29,6 +30,7 @@ export async function GET() {
       .select('decision_type, job_id, score, decision_summary, output_skills_matched, output_skills_missing, model_id, was_reviewed_by_human, human_override_score, human_override_reason, created_at')
       .eq('subject_user_id', user.id)
       .order('created_at', { ascending: false }),
+    supabase.from('candidate_demographics').select('*').eq('seeker_id', user.id).maybeSingle(),
   ])
 
   const exportData = {
@@ -42,6 +44,10 @@ export async function GET() {
     profile,
     cv_profile: cvProfile,
     company_profile: companyProfile,
+    fairness_demographics: {
+      notice: 'Helt frivilliga uppgifter du själv valt att ange för fairness-övervakning. Används aldrig i matchning eller av AI, och delas aldrig med rekryterare på individnivå — bara i anonymiserad, aggregerad statistik.',
+      data: demographics,
+    },
     applications,
     saved_jobs: savedJobs,
     conversations,

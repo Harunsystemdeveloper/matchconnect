@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { BriefcaseIcon, FileTextIcon, PlusIcon, UsersIcon, Brain, MessageSquare, Star, Clock } from 'lucide-react'
+import { BriefcaseIcon, FileTextIcon, PlusIcon, UsersIcon, Brain, MessageSquare, Star, Clock, Scale } from 'lucide-react'
 import type { Profile } from '@/types/database'
 
 export default async function RecruiterDashboard({ profile }: { profile: Profile }) {
@@ -72,6 +72,22 @@ export default async function RecruiterDashboard({ profile }: { profile: Profile
           </CardContent>
         </Card>
       </div>
+
+      {/* Fairness quick-link */}
+      <Card className="border-dashed">
+        <CardContent className="pt-5 pb-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Scale className="h-5 w-5 text-primary" />
+            <div>
+              <p className="text-sm font-medium">Fairness & Bias-övervakning</p>
+              <p className="text-xs text-muted-foreground">Anonymiserad statistik för att upptäcka systematiska skillnader i matchningsresultat</p>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" asChild className="flex-shrink-0">
+            <Link href="/recruiter/fairness">Visa dashboard</Link>
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Recent jobs */}
       {jobs && jobs.length > 0 ? (

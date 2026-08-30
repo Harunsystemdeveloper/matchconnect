@@ -225,6 +225,19 @@ export interface ConversationWithProfiles extends Conversation {
   unread_count?: number
 }
 
+export type Gender = 'kvinna' | 'man' | 'annat'
+
+export interface CandidateDemographics {
+  id: string
+  seeker_id: string
+  gender: Gender | null
+  birth_year: number | null
+  consent_given_at: string
+  consent_version: string
+  created_at: string
+  updated_at: string
+}
+
 export type AiDecisionType =
   | 'cv_analysis'
   | 'match_score'
@@ -232,17 +245,18 @@ export type AiDecisionType =
   | 'interview_questions'
   | 'candidate_summary'
   | 'auto_match'
+  | 'fairness_analysis'
 
 export interface AiDecisionLog {
   id: string
-  subject_user_id: string
+  subject_user_id: string | null
   triggered_by_user_id: string | null
   decision_type: AiDecisionType
   job_id: string | null
   application_id: string | null
   score: number | null
   decision_summary: string | null
-  decision_data: MatchBreakdown | null
+  decision_data: Record<string, unknown> | null
   input_skills: string[] | null
   output_skills_matched: string[] | null
   output_skills_missing: string[] | null
