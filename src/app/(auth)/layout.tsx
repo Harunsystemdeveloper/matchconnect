@@ -1,5 +1,11 @@
 import Link from 'next/link'
-import { Briefcase } from 'lucide-react'
+import { Briefcase, Brain, ClipboardCheck, ShieldCheck, Check } from 'lucide-react'
+
+const RECRUITER_FEATURES = [
+  { icon: Brain, text: 'AI rankar och motiverar varje kandidat på sekunder' },
+  { icon: ClipboardCheck, text: 'Strukturerade intervjuutvärderingar — inte magkänsla' },
+  { icon: ShieldCheck, text: 'Fairness-övervakning och full spårbarhet enligt EU AI Act' },
+]
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -56,22 +62,50 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             MatchConnect analyserar kompetenser och erfarenhet för att skapa perfekta matchningar på svenska arbetsmarknaden.
           </p>
 
+          {/* Recruiter value props */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '24px' }}>
+            {RECRUITER_FEATURES.map(({ icon: Icon, text }) => (
+              <div key={text} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                <div style={{
+                  width: '26px', height: '26px', borderRadius: '8px', flexShrink: 0,
+                  background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1px',
+                }}>
+                  <Icon size={13} color="#c7d2fe" />
+                </div>
+                <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '13.5px', lineHeight: 1.5, margin: 0, paddingTop: '3px' }}>{text}</p>
+              </div>
+            ))}
+          </div>
+
           {/* Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '40px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '24px' }}>
             {[
               { value: '180 000', label: 'Tjänster utan kandidat' },
               { value: '74%', label: 'Av företagen har svårt att rekrytera' },
-              { value: '< 30 sek', label: 'CV-analys med AI' },
-              { value: '100%', label: 'Gratis för alla användare' },
             ].map((s) => (
               <div key={s.value} style={{
                 background: 'rgba(255,255,255,0.1)',
                 border: '1px solid rgba(255,255,255,0.18)',
                 borderRadius: '12px',
-                padding: '16px',
+                padding: '14px',
               }}>
-                <p style={{ color: 'white', fontWeight: 700, fontSize: '22px', margin: 0 }}>{s.value}</p>
-                <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '12px', marginTop: '4px', lineHeight: 1.4 }}>{s.label}</p>
+                <p style={{ color: 'white', fontWeight: 700, fontSize: '20px', margin: 0 }}>{s.value}</p>
+                <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '11.5px', marginTop: '4px', lineHeight: 1.4 }}>{s.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Trust strip */}
+          <div style={{ display: 'flex', gap: '8px', marginTop: '18px', flexWrap: 'wrap' }}>
+            {['GDPR-säkert', 'EU AI Act-spårbart', '100% gratis'].map(t => (
+              <div key={t} style={{
+                display: 'flex', alignItems: 'center', gap: '5px',
+                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)',
+                borderRadius: '999px', padding: '5px 10px',
+              }}>
+                <Check size={11} color="#86efac" />
+                <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', fontWeight: 500 }}>{t}</span>
               </div>
             ))}
           </div>
