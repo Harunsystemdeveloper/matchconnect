@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { sendNewApplicationEmail } from '@/lib/email'
 
@@ -43,7 +43,9 @@ export async function POST(req: Request) {
         .eq('id', job.recruiter_id)
         .single()
 
-      const { data: authData } = await supabase.auth.admin.getUserById(job.recruiter_id)
+      // .auth.admin kräver service-role — den vanliga sessionsklienten har inte rättigheten.
+      const admin = createAdminClient()
+      const { data: authData } = await admin.auth.admin.getUserById(job.recruiter_id)
 
       if (!authData?.user?.email) return
 

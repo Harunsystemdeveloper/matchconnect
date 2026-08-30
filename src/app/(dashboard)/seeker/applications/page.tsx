@@ -1,11 +1,13 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin, Briefcase, MessageSquare, Globe, Clock } from 'lucide-react'
+import { MapPin, Briefcase, MessageSquare, Globe, Clock, Users, TrendingUp } from 'lucide-react'
 import { WithdrawButton } from '@/components/seeker/withdraw-button'
+import { ApplicationTimeline } from '@/components/seeker/application-timeline'
+import { MIN_APPLICANTS_FOR_RANKING, percentileBucketLabel, computePercentile } from '@/lib/applications/ranking'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Mina ansökningar' }
@@ -68,6 +70,31 @@ export default async function ApplicationsPage() {
   const companyMap = new Map((companyProfiles ?? []).map(c => [c.recruiter_id, c]))
   const recruiterNameMap = new Map((recruiterProfiles ?? []).map(r => [r.id, r.full_name]))
 
+  // Intervjuer -- egna, RLS tillåter det direkt.
+  const applicationIds = (applications ?? []).map(a => a.id)
+  const { data: interviews } = applicationIds.length > 0
+    ? await supabase.from('interview_schedules').select('application_id').in('application_id', applicationIds)
+    : { data: [] }
+  const interviewedAppIds = new Set((interviews ?? []).map(i => i.application_id))
+
+  // Anonymiserad konkurrensbild: hur många har sökt samma jobb, och ungefär var man ligger.
+  // Kräver att läsa ANDRA sökandes match_score -- vanlig RLS tillåter bara egna ansökningar,
+  // så vi använder admin-klienten men returnerar ENDAST aggregerade siffror, aldrig
+  // individuella poäng eller identiteter, till klienten.
+  const jobIds = [...new Set((applications ?? []).map(a => a.job_id))]
+  const admin = createAdminClient()
+  const { data: allJobApplications } = jobIds.length > 0
+    ? await admin.from('applications').select('id, job_id, match_score').in('job_id', jobIds)
+    : { data: [] }
+
+  const jobStats = new Map<string, { total: number; scores: { id: string; score: number }[] }>()
+  for (const a of allJobApplications ?? []) {
+    if (!jobStats.has(a.job_id)) jobStats.set(a.job_id, { total: 0, scores: [] })
+    const s = jobStats.get(a.job_id)!
+    s.total++
+    if (typeof a.match_score === 'number') s.scores.push({ id: a.id, score: a.match_score })
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -106,10 +133,14 @@ export default async function ApplicationsPage() {
             const companyName = company?.company_name ?? 'Okänt företag'
             const recruiterName = job ? recruiterNameMap.get(job.recruiter_id) : null
             const cfg = statusConfig[app.status] ?? statusConfig.pending
+            const stats = job ? jobStats.get(job.id) : null
+            const percentile = stats && app.match_score != null
+              ? computePercentile(app.match_score, stats.scores.filter(s => s.id !== app.id).map(s => s.score))
+              : null
 
             return (
               <Card key={app.id}>
-                <CardContent className="pt-5 pb-5">
+                <CardContent className="pt-5 pb-5 space-y-4">
                   <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <Link href={`/seeker/jobs/${job?.id}`} className="hover:underline">
@@ -178,6 +209,31 @@ export default async function ApplicationsPage() {
                       )}
                     </div>
                   </div>
+
+                  {/* Tidslinje */}
+                  <div className="pt-1">
+                    <ApplicationTimeline
+                      status={app.status}
+                      hasInterview={interviewedAppIds.has(app.id)}
+                      decided={app.decided_at != null}
+                    />
+                  </div>
+
+                  {/* Anonymiserad konkurrensbild */}
+                  {stats && stats.total >= MIN_APPLICANTS_FOR_RANKING && (
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground border-t pt-3">
+                      <span className="flex items-center gap-1">
+                        <Users className="h-3.5 w-3.5" />
+                        {stats.total} sökande totalt
+                      </span>
+                      {percentile != null && (
+                        <span className="flex items-center gap-1">
+                          <TrendingUp className="h-3.5 w-3.5" />
+                          Din matchning ligger bland <strong className="text-foreground">{percentileBucketLabel(percentile)}</strong> av sökande
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )

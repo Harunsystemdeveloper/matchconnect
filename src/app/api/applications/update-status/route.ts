@@ -1,6 +1,13 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { sendStatusUpdateEmail } from '@/lib/email'
+
+const STATUS_NOTIFICATION_LABELS: Record<string, string> = {
+  reviewed: 'Din ansökan har granskats',
+  shortlisted: 'Du är shortlistad!',
+  accepted: 'Grattis — du har blivit accepterad!',
+  rejected: 'Uppdatering på din ansökan',
+}
 
 export async function POST(req: Request) {
   const supabase = await createClient()
@@ -36,7 +43,7 @@ export async function POST(req: Request) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
-  // Send email to seeker in background
+  // Notifiera kandidaten i bakgrunden — både in-app-notis och mejl
   ;(async () => {
     try {
       const { data: application } = await supabase
@@ -49,13 +56,27 @@ export async function POST(req: Request) {
       const job = Array.isArray(application.job) ? application.job[0] : application.job
       if (!job) return
 
+      // In-app-notis — synlig oavsett om e-post går fram eller inte
+      const notifTitle = STATUS_NOTIFICATION_LABELS[status]
+      if (notifTitle) {
+        await supabase.from('notifications').insert({
+          user_id: application.seeker_id,
+          type: 'status_change',
+          title: notifTitle,
+          body: `Din ansökan till "${job.title}" har uppdaterats.`,
+          href: '/seeker/applications',
+        })
+      }
+
       const { data: seeker } = await supabase
         .from('profiles')
         .select('full_name')
         .eq('id', application.seeker_id)
         .single()
 
-      const { data: authData } = await supabase.auth.admin.getUserById(application.seeker_id)
+      // .auth.admin kräver service-role — den vanliga sessionsklienten har inte rättigheten.
+      const admin = createAdminClient()
+      const { data: authData } = await admin.auth.admin.getUserById(application.seeker_id)
       if (!authData?.user?.email) return
 
       await sendStatusUpdateEmail({
@@ -66,7 +87,7 @@ export async function POST(req: Request) {
         jobId: job.id,
       })
     } catch (err) {
-      console.error('[update-status] email error:', err)
+      console.error('[update-status] notification error:', err)
     }
   })()
 
