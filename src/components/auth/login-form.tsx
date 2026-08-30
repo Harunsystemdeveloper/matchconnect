@@ -36,7 +36,7 @@ export function LoginForm() {
     if (error?.message?.toLowerCase().includes('email not confirmed')) {
       await fetch('/api/auth/confirm-email', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: data.email }),
+        body: JSON.stringify({ email: data.email, password: data.password }),
       })
       const retry = await supabase.auth.signInWithPassword({ email: data.email, password: data.password })
       error = retry.error

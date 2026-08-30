@@ -1,7 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 import { rateLimit } from '@/lib/rate-limit'
 import { sendWelcomeEmail } from '@/lib/email'
+
+const schema = z.object({
+  email: z.string().email('Ogiltig e-postadress'),
+  password: z.string().min(6, 'Lösenord måste vara minst 6 tecken'),
+  user_type: z.enum(['job_seeker', 'recruiter']),
+  full_name: z.string().max(200).optional(),
+})
 
 export async function POST(req: Request) {
   const ip = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown'
@@ -9,7 +17,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'För många registreringsförsök. Försök igen om en timme.' }, { status: 429 })
   }
 
-  const { email, password, user_type, full_name } = await req.json()
+  const body = await req.json()
+  const parsed = schema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Ogiltiga uppgifter' }, { status: 400 })
+  }
+  const { email, password, user_type, full_name } = parsed.data
 
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

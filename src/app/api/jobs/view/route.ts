@@ -1,10 +1,16 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { rateLimit } from '@/lib/rate-limit'
 
 const schema = z.object({ job_id: z.string().uuid() })
 
 export async function POST(request: Request) {
+  const ip = request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? 'unknown'
+  if (!rateLimit(`job-view:${ip}`, 60, 60 * 60 * 1000)) {
+    return NextResponse.json({ ok: false }, { status: 429 })
+  }
+
   const body = await request.json().catch(() => ({}))
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ ok: false }, { status: 400 })

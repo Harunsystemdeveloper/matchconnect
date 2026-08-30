@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import {
   MapPin, Globe, Users, Briefcase, ArrowRight,
-  Building2, ExternalLink
+  Building2, ExternalLink, Quote
 } from 'lucide-react'
 import type { Metadata } from 'next'
 
@@ -47,22 +47,37 @@ export default async function CompanyPage({ params }: { params: Promise<{ id: st
     .order('created_at', { ascending: false })
 
   const initials = company.company_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
+  const brandColor: string | null = company.brand_color ?? null
+  const testimonials: { name: string; role: string; quote: string }[] = company.testimonials ?? []
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Cover image */}
+      {company.cover_image_url && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={company.cover_image_url} alt="" className="w-full h-48 sm:h-64 object-cover" />
+      )}
+
       {/* Hero */}
-      <div className="border-b bg-muted/30">
+      <div className="border-b bg-muted/30" style={brandColor ? { borderBottomColor: `${brandColor}33` } : undefined}>
         <div className="max-w-4xl mx-auto px-4 py-12">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-            <Avatar className="h-24 w-24 flex-shrink-0 rounded-2xl border-2">
+            <Avatar className="h-24 w-24 flex-shrink-0 rounded-2xl border-2" style={brandColor ? { borderColor: brandColor } : undefined}>
               <AvatarImage src={company.logo_url ?? ''} />
-              <AvatarFallback className="gradient-primary text-white text-2xl rounded-2xl">{initials}</AvatarFallback>
+              <AvatarFallback
+                className="text-white text-2xl rounded-2xl gradient-primary"
+                style={brandColor ? { background: brandColor } : undefined}
+              >
+                {initials}
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-3 mb-2">
                 <h1 className="text-3xl font-bold">{company.company_name}</h1>
                 {company.industry && (
-                  <Badge variant="secondary">{company.industry}</Badge>
+                  <Badge variant="secondary" style={brandColor ? { background: `${brandColor}1a`, color: brandColor } : undefined}>
+                    {company.industry}
+                  </Badge>
                 )}
               </div>
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
@@ -165,6 +180,30 @@ export default async function CompanyPage({ params }: { params: Promise<{ id: st
               </div>
             )}
           </section>
+
+          {/* Medarbetarcitat */}
+          {testimonials.length > 0 && (
+            <>
+              <Separator />
+              <section>
+                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Quote className="h-5 w-5 text-primary" style={brandColor ? { color: brandColor } : undefined} />
+                  Vad medarbetare säger
+                </h2>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {testimonials.map((t, i) => (
+                    <Card key={i}>
+                      <CardContent className="p-4 space-y-2">
+                        <Quote className="h-5 w-5 text-muted-foreground/40" />
+                        <p className="text-sm italic leading-relaxed">&ldquo;{t.quote}&rdquo;</p>
+                        <p className="text-xs font-medium mt-2">{t.name}{t.role ? ` · ${t.role}` : ''}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
         </div>
 
         {/* Right: Sidebar */}
@@ -209,7 +248,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ id: st
             </Button>
           )}
 
-          <Button className="w-full" asChild>
+          <Button className="w-full" asChild style={brandColor ? { background: brandColor, borderColor: brandColor } : undefined}>
             <Link href={`/seeker/jobs?recruiter=${company.recruiter_id}`}>
               <Briefcase className="mr-2 h-4 w-4" />
               Se alla tjänster

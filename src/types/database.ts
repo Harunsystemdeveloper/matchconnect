@@ -18,6 +18,12 @@ export interface Profile {
   updated_at: string
 }
 
+export interface Testimonial {
+  name: string
+  role: string
+  quote: string
+}
+
 export interface CompanyProfile {
   id: string
   recruiter_id: string
@@ -28,6 +34,9 @@ export interface CompanyProfile {
   website: string | null
   location: string | null
   size: CompanySize | null
+  brand_color: string | null
+  cover_image_url: string | null
+  testimonials: Testimonial[]
   created_at: string
   updated_at: string
 }
@@ -149,6 +158,28 @@ export interface InterviewSchedule {
   meeting_link: string | null
   notes: string | null
   status: InterviewStatus
+  created_at: string
+  updated_at: string
+}
+
+export type ScorecardRecommendation = 'strong_yes' | 'yes' | 'no' | 'strong_no'
+
+export interface ScorecardRating {
+  question: string
+  rating: number // 1-5
+  comment: string
+}
+
+export interface InterviewScorecard {
+  id: string
+  application_id: string
+  recruiter_id: string
+  seeker_id: string
+  stage: string
+  ratings: ScorecardRating[]
+  overall_rating: number | null
+  recommendation: ScorecardRecommendation | null
+  notes: string | null
   created_at: string
   updated_at: string
 }

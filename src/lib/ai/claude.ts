@@ -201,6 +201,44 @@ Return only valid JSON, no markdown.`,
   return JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
 }
 
+export async function summarizeInterviewFeedback(
+  candidateName: string,
+  scorecards: Array<{
+    stage: string
+    overall_rating: number | null
+    recommendation: string | null
+    ratings: Array<{ question: string; rating: number; comment: string }>
+    notes: string | null
+  }>
+) {
+  const message = await anthropic.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 800,
+    system: `Du är en erfaren rekryteringschef. Du får strukturerad intervjufeedback (scorecards) från ett eller flera intervjusteg för en och samma kandidat.
+Din uppgift är att sammanställa en objektiv, balanserad rekommendation baserad ENDAST på det underlag som ges — hitta inte på egna intryck.
+
+Returnera giltig JSON:
+{
+  "summary": "3-4 meningar som sammanfattar styrkor, svagheter och samstämmighet/oenighet mellan intervjustegen, på svenska",
+  "consensus": "strong_yes|yes|no|strong_no|mixed",
+  "key_strengths": ["styrka1", "styrka2"],
+  "key_concerns": ["oro1", "oro2"]
+}
+
+Regler:
+- "consensus" = "mixed" om rekommendationerna spretar mellan stegen
+- Basera key_strengths/key_concerns enbart på kommentarerna i underlaget
+- Svara ENDAST med JSON.`,
+    messages: [{
+      role: 'user',
+      content: `Kandidat: ${candidateName}\n\nScorecards:\n${JSON.stringify(scorecards, null, 2)}`,
+    }],
+  })
+
+  const text = message.content[0].type === 'text' ? message.content[0].text : ''
+  return JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
+}
+
 export async function summarizeCandidate(cvText: string, matchScore: number, skillGaps: string[]) {
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',

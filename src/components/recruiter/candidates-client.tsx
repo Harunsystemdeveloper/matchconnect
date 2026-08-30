@@ -16,12 +16,13 @@ import {
 } from '@/components/ui/dialog'
 import {
   Loader2, Star, StarOff, MessageSquare, Search,
-  Brain, ArrowLeft, Users, MapPin, LayoutList, Columns, Download, StickyNote, Pencil
+  Brain, ArrowLeft, Users, MapPin, LayoutList, Columns, Download, StickyNote, Pencil, ClipboardCheck
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { CandidateCrmPanel } from '@/components/recruiter/candidate-crm-panel'
 import { InterviewScheduleButton } from '@/components/recruiter/interview-schedule-button'
+import { InterviewScorecardPanel } from '@/components/recruiter/interview-scorecard-panel'
 
 interface Candidate {
   id: string
@@ -29,6 +30,7 @@ interface Candidate {
   match_score: number | null
   ai_summary: string | null
   skill_gaps: string[] | null
+  interview_questions: string[] | null
   is_shortlisted: boolean
   seeker: { id: string; full_name: string | null; avatar_url: string | null; headline: string | null; location: string | null } | null
   cv: { skills: string[] | null; experience_years: number | null; ai_summary: string | null; languages: string[] | null } | null
@@ -68,6 +70,8 @@ export function CandidatesClient({
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
   const [crmOpen, setCrmOpen] = useState(false)
   const [crmCandidate, setCrmCandidate] = useState<{ id: string; name: string } | null>(null)
+  const [scorecardOpen, setScorecardOpen] = useState(false)
+  const [scorecardCandidate, setScorecardCandidate] = useState<{ applicationId: string; seekerId: string; name: string; questions: string[] } | null>(null)
   const [overrideOpen, setOverrideOpen] = useState(false)
   const [overrideApp, setOverrideApp] = useState<{ id: string; name: string; currentScore: number | null } | null>(null)
   const [overrideScore, setOverrideScore] = useState<number>(50)
@@ -108,6 +112,11 @@ export function CandidatesClient({
   function openCrm(seekerId: string, name: string) {
     setCrmCandidate({ id: seekerId, name })
     setCrmOpen(true)
+  }
+
+  function openScorecard(applicationId: string, seekerId: string, name: string, questions: string[] | null) {
+    setScorecardCandidate({ applicationId, seekerId, name, questions: questions ?? [] })
+    setScorecardOpen(true)
   }
 
   function exportCsv() {
@@ -501,6 +510,13 @@ export function CandidatesClient({
                         applicationId={app.id}
                         seekerId={seeker?.id ?? ''}
                       />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openScorecard(app.id, seeker?.id ?? '', seeker?.full_name ?? 'Kandidat', app.interview_questions)}
+                      >
+                        <ClipboardCheck className="mr-1 h-3.5 w-3.5" />Scorecard
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
@@ -570,6 +586,25 @@ export function CandidatesClient({
           {crmCandidate && (
             <div className="mt-4">
               <CandidateCrmPanel seekerId={crmCandidate.id} seekerName={crmCandidate.name} />
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* Scorecard Sheet */}
+      <Sheet open={scorecardOpen} onOpenChange={setScorecardOpen}>
+        <SheetContent className="w-[420px] sm:w-[480px] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Intervjuutvärdering</SheetTitle>
+          </SheetHeader>
+          {scorecardCandidate && (
+            <div className="mt-4">
+              <InterviewScorecardPanel
+                applicationId={scorecardCandidate.applicationId}
+                seekerId={scorecardCandidate.seekerId}
+                seekerName={scorecardCandidate.name}
+                suggestedQuestions={scorecardCandidate.questions}
+              />
             </div>
           )}
         </SheetContent>

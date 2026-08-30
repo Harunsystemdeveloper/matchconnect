@@ -11,10 +11,10 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Loader2, Upload, Building2 } from 'lucide-react'
+import { Loader2, Upload, Building2, Image as ImageIcon, Palette, Quote, Plus, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import type { Profile, CompanyProfile } from '@/types/database'
+import type { Profile, CompanyProfile, Testimonial } from '@/types/database'
 
 const schema = z.object({
   company_name: z.string().min(1, 'Ange företagsnamn'),
@@ -25,11 +25,18 @@ const schema = z.object({
   size: z.string().optional(),
 })
 
+const BRAND_COLORS = ['#6d28d9', '#2563eb', '#0891b2', '#059669', '#d97706', '#dc2626', '#db2777', '#4f46e5']
+
 export function CompanyProfileClient({ profile, company }: { profile: Profile; company: CompanyProfile | null }) {
   const [saving, setSaving] = useState(false)
   const [logoUploading, setLogoUploading] = useState(false)
   const [logoUrl, setLogoUrl] = useState(company?.logo_url ?? '')
+  const [coverUploading, setCoverUploading] = useState(false)
+  const [coverUrl, setCoverUrl] = useState(company?.cover_image_url ?? '')
+  const [brandColor, setBrandColor] = useState(company?.brand_color ?? BRAND_COLORS[0])
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(company?.testimonials ?? [])
   const logoRef = useRef<HTMLInputElement>(null)
+  const coverRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
@@ -57,12 +64,40 @@ export function CompanyProfileClient({ profile, company }: { profile: Profile; c
     setLogoUploading(false)
   }
 
+  async function uploadCover(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setCoverUploading(true)
+    const path = `covers/${profile.id}.${file.name.split('.').pop()}`
+    const { error } = await supabase.storage.from('logos').upload(path, file, { upsert: true })
+    if (error) { toast.error('Uppladdning misslyckades'); setCoverUploading(false); return }
+    const { data: { publicUrl } } = supabase.storage.from('logos').getPublicUrl(path)
+    setCoverUrl(publicUrl)
+    toast.success('Omslagsbild uppladdad!')
+    setCoverUploading(false)
+  }
+
+  function addTestimonial() {
+    setTestimonials(prev => [...prev, { name: '', role: '', quote: '' }])
+  }
+
+  function updateTestimonial(i: number, patch: Partial<Testimonial>) {
+    setTestimonials(prev => prev.map((t, idx) => idx === i ? { ...t, ...patch } : t))
+  }
+
+  function removeTestimonial(i: number) {
+    setTestimonials(prev => prev.filter((_, idx) => idx !== i))
+  }
+
   async function onSubmit(data: z.infer<typeof schema>) {
     setSaving(true)
     const { error } = await supabase.from('company_profiles').upsert({
       recruiter_id: profile.id,
       ...data,
       logo_url: logoUrl || null,
+      cover_image_url: coverUrl || null,
+      brand_color: brandColor || null,
+      testimonials: testimonials.filter(t => t.name.trim() && t.quote.trim()),
       updated_at: new Date().toISOString(),
     })
     if (error) toast.error('Kunde inte spara', { description: error.message })
@@ -92,6 +127,72 @@ export function CompanyProfileClient({ profile, company }: { profile: Profile; c
             </Button>
             <p className="text-xs text-muted-foreground mt-1">PNG, SVG, max 2 MB</p>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Cover image */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Omslagsbild (karriärsida)</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          {coverUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={coverUrl} alt="Omslagsbild" className="w-full h-32 object-cover rounded-lg border" />
+          )}
+          <input ref={coverRef} type="file" accept="image/*" className="hidden" onChange={uploadCover} />
+          <Button variant="outline" size="sm" onClick={() => coverRef.current?.click()} disabled={coverUploading}>
+            {coverUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ImageIcon className="mr-2 h-4 w-4" />}
+            {coverUrl ? 'Byt omslagsbild' : 'Ladda upp omslagsbild'}
+          </Button>
+          <p className="text-xs text-muted-foreground">Visas som hero-bild på er publika karriärsida. Rekommenderat 1600×400px.</p>
+        </CardContent>
+      </Card>
+
+      {/* Brand color */}
+      <Card>
+        <CardHeader><CardTitle className="text-base flex items-center gap-2"><Palette className="h-4 w-4" />Varumärkesfärg</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex flex-wrap gap-2">
+            {BRAND_COLORS.map(c => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setBrandColor(c)}
+                className={`h-8 w-8 rounded-full border-2 transition-transform ${brandColor === c ? 'scale-110 border-foreground' : 'border-transparent'}`}
+                style={{ backgroundColor: c }}
+                aria-label={c}
+              />
+            ))}
+            <input
+              type="color"
+              value={brandColor}
+              onChange={e => setBrandColor(e.target.value)}
+              className="h-8 w-8 rounded-full border cursor-pointer bg-transparent"
+              title="Egen färg"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">Används som accentfärg på er publika karriärsida.</p>
+        </CardContent>
+      </Card>
+
+      {/* Testimonials */}
+      <Card>
+        <CardHeader><CardTitle className="text-base flex items-center gap-2"><Quote className="h-4 w-4" />Medarbetarcitat</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          {testimonials.map((t, i) => (
+            <div key={i} className="rounded-lg border p-3 space-y-2">
+              <div className="flex gap-2">
+                <Input placeholder="Namn" value={t.name} onChange={e => updateTestimonial(i, { name: e.target.value })} className="text-sm" />
+                <Input placeholder="Roll, t.ex. Utvecklare" value={t.role} onChange={e => updateTestimonial(i, { role: e.target.value })} className="text-sm" />
+                <Button variant="ghost" size="sm" className="px-2 flex-shrink-0" onClick={() => removeTestimonial(i)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <Textarea placeholder="Citat om hur det är att jobba hos er..." rows={2} value={t.quote} onChange={e => updateTestimonial(i, { quote: e.target.value })} className="text-sm" />
+            </div>
+          ))}
+          <Button variant="outline" size="sm" className="w-full" onClick={addTestimonial}>
+            <Plus className="mr-2 h-4 w-4" />Lägg till citat
+          </Button>
         </CardContent>
       </Card>
 
