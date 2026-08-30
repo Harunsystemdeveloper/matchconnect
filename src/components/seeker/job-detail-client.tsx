@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type ComponentPropsWithoutRef } from 'react'
 import Link from 'next/link'
+import ReactMarkdown from 'react-markdown'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -10,11 +11,29 @@ import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   MapPin, Globe, Bookmark, BookmarkCheck, Loader2,
-  Brain, Target, MessageSquare, CheckCircle, XCircle, ArrowLeft, Calendar, AlertCircle, Share2
+  Brain, Target, MessageSquare, CheckCircle, XCircle, ArrowLeft, Calendar, AlertCircle, Share2, FileWarning
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { daysUntil } from '@/lib/utils'
 import { toast } from 'sonner'
+
+// Ingen typografi-plugin är installerad, så vi styr markdown-elementen manuellt istället
+// för att lita på "prose"-klasser som annars inte gör något.
+const markdownComponents = {
+  h1: (p: ComponentPropsWithoutRef<'h1'>) => <h2 className="text-lg font-semibold mt-6 mb-2 first:mt-0" {...p} />,
+  h2: (p: ComponentPropsWithoutRef<'h2'>) => <h3 className="text-base font-semibold mt-5 mb-2 first:mt-0" {...p} />,
+  h3: (p: ComponentPropsWithoutRef<'h3'>) => <h4 className="text-sm font-semibold mt-4 mb-1.5 first:mt-0" {...p} />,
+  p: (p: ComponentPropsWithoutRef<'p'>) => <p className="text-sm leading-relaxed text-muted-foreground mb-3" {...p} />,
+  ul: (p: ComponentPropsWithoutRef<'ul'>) => <ul className="space-y-1.5 mb-3 ml-1" {...p} />,
+  ol: (p: ComponentPropsWithoutRef<'ol'>) => <ol className="space-y-1.5 mb-3 ml-4 list-decimal" {...p} />,
+  li: (p: ComponentPropsWithoutRef<'li'>) => (
+    <li className="text-sm leading-relaxed text-muted-foreground flex gap-2">
+      <span className="text-primary mt-1.5 h-1 w-1 rounded-full bg-primary flex-shrink-0" />
+      <span>{p.children}</span>
+    </li>
+  ),
+  strong: (p: ComponentPropsWithoutRef<'strong'>) => <strong className="font-semibold text-foreground" {...p} />,
+}
 
 interface Props {
   job: {
@@ -57,21 +76,28 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
     setSaved(!saved)
   }
 
-  async function applyToJob() {
-    setApplying(true)
+  const MIN_COVER_LETTER = 80
+  const hasCv = !!cvProfile?.skills?.length
+  const phoneValid = phone.trim().length >= 6
+  const coverLetterValid = coverLetter.trim().length >= MIN_COVER_LETTER
 
-    // Build structured cover letter from all fields
-    const parts: string[] = []
-    if (phone) parts.push(`📱 Telefon: ${phone}`)
-    if (availability) parts.push(`📅 Tillgänglighet: ${availability}`)
-    if (salaryExpectation) parts.push(`💰 Löneanspråk: ${salaryExpectation}`)
-    const metaBlock = parts.join('\n')
-    const fullCoverLetter = [metaBlock, coverLetter].filter(Boolean).join('\n\n')
+  async function applyToJob() {
+    if (!coverLetterValid) {
+      toast.error(`Skriv minst ${MIN_COVER_LETTER} tecken om varför du söker`)
+      return
+    }
+    setApplying(true)
 
     const res = await fetch('/api/applications/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ job_id: job.id, cover_letter: fullCoverLetter || null }),
+      body: JSON.stringify({
+        job_id: job.id,
+        phone,
+        availability: availability || undefined,
+        salary_expectation: salaryExpectation || undefined,
+        cover_letter: coverLetter,
+      }),
     })
     const data = await res.json()
     if (!res.ok) {
@@ -211,12 +237,12 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
 
             <TabsContent value="description" className="mt-4">
               <Card>
-                <CardContent className="pt-6 prose prose-sm dark:prose-invert max-w-none">
-                  <div className="whitespace-pre-wrap text-sm leading-relaxed">{job.description}</div>
+                <CardContent className="pt-6 max-w-none">
+                  <ReactMarkdown components={markdownComponents}>{job.description}</ReactMarkdown>
                   {job.requirements && (
                     <>
-                      <h3 className="font-semibold mt-6 mb-2">Krav</h3>
-                      <div className="whitespace-pre-wrap text-sm">{job.requirements}</div>
+                      <h3 className="text-sm font-semibold mt-6 mb-2 pt-4 border-t">Krav</h3>
+                      <ReactMarkdown components={markdownComponents}>{job.requirements}</ReactMarkdown>
                     </>
                   )}
                 </CardContent>
@@ -363,20 +389,38 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
                     Se alla mina ansökningar →
                   </Link>
                 </div>
+              ) : !hasCv ? (
+                <div className="text-center space-y-3 py-2">
+                  <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mx-auto">
+                    <FileWarning className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">CV krävs för att ansöka</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Ladda upp och analysera ditt CV så att rekryteraren och AI-matchningen faktiskt kan bedöma din ansökan — precis som på riktiga jobbannonser.
+                    </p>
+                  </div>
+                  <Button asChild className="w-full">
+                    <Link href="/seeker/profile">Ladda upp CV</Link>
+                  </Button>
+                </div>
               ) : applyStep === 1 ? (
                 <>
                   <p className="text-xs text-muted-foreground">Steg 1 av 2 — Grunduppgifter</p>
 
                   <div className="space-y-3">
                     <div className="space-y-1.5">
-                      <label className="text-sm font-medium">Telefonnummer <span className="text-muted-foreground font-normal">(valfritt)</span></label>
+                      <label className="text-sm font-medium">Telefonnummer <span className="text-destructive">*</span></label>
                       <input
                         type="tel"
                         placeholder="070-123 45 67"
                         value={phone}
                         onChange={e => setPhone(e.target.value)}
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        className={`w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                          phone && !phoneValid ? 'border-destructive' : 'border-input'
+                        }`}
                       />
+                      <p className="text-xs text-muted-foreground">Krävs så att rekryteraren kan kontakta dig.</p>
                     </div>
 
                     <div className="space-y-1.5">
@@ -407,13 +451,7 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
                     </div>
                   </div>
 
-                  {!cvProfile?.skills?.length && (
-                    <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-md p-2">
-                      Tips: <Link href="/seeker/profile" className="underline">Lägg till kompetenser</Link> för ett bättre AI-matchningspoäng.
-                    </p>
-                  )}
-
-                  <Button className="w-full" onClick={() => setApplyStep(2)}>
+                  <Button className="w-full" onClick={() => setApplyStep(2)} disabled={!phoneValid}>
                     Nästa steg →
                   </Button>
                 </>
@@ -423,22 +461,25 @@ export function JobDetailClient({ job, application: initialApplication, isSaved:
 
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium">
-                      Berätta om dig själv <span className="text-muted-foreground font-normal">(valfritt)</span>
+                      Berätta om dig själv <span className="text-destructive">*</span>
                     </label>
                     <Textarea
                       placeholder={`Varför söker du den här rollen?\nVad gör dig till en bra kandidat?\nVad vill du bidra med?`}
                       rows={7}
                       value={coverLetter}
-                      onChange={e => setCoverLetter(e.target.value)}
+                      onChange={e => setCoverLetter(e.target.value.slice(0, 1000))}
+                      className={coverLetter && !coverLetterValid ? 'border-destructive' : undefined}
                     />
-                    <p className="text-xs text-muted-foreground">{coverLetter.length}/1000 tecken</p>
+                    <p className={`text-xs ${coverLetter.length > 0 && !coverLetterValid ? 'text-destructive' : 'text-muted-foreground'}`}>
+                      {coverLetter.length}/1000 tecken {!coverLetterValid && `(minst ${MIN_COVER_LETTER} krävs)`}
+                    </p>
                   </div>
 
                   <div className="flex gap-2">
                     <Button variant="outline" className="flex-1" onClick={() => setApplyStep(1)}>
                       ← Tillbaka
                     </Button>
-                    <Button className="flex-1" onClick={applyToJob} disabled={applying}>
+                    <Button className="flex-1" onClick={applyToJob} disabled={applying || !coverLetterValid}>
                       {applying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       Skicka
                     </Button>

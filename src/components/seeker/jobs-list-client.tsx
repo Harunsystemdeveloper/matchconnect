@@ -6,10 +6,12 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { MapPin, Bookmark, BookmarkCheck, Search, Briefcase, Clock, ChevronLeft, ChevronRight, SlidersHorizontal, AlertCircle } from 'lucide-react'
+import { MapPin, Bookmark, BookmarkCheck, Search, Clock, ChevronLeft, ChevronRight, SlidersHorizontal, AlertCircle, Building2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { JobSearchIllustration } from '@/components/illustrations/job-search-illustration'
 
 interface Job {
   id: string
@@ -102,9 +104,15 @@ export function JobsListClient({ jobs: initialJobs, userId }: { jobs: Job[]; use
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Hitta jobb</h1>
-        <p className="text-muted-foreground">{jobs.length} aktiva annonser</p>
+      {/* Hero */}
+      <div className="relative overflow-hidden rounded-2xl border bg-muted/30">
+        <div className="relative z-10 px-6 py-8 sm:px-10 sm:py-10 max-w-xl">
+          <h1 className="text-2xl sm:text-3xl font-bold">Hitta ditt nästa jobb</h1>
+          <p className="text-muted-foreground mt-2">
+            <span className="font-semibold text-foreground">{jobs.length}</span> aktiva annonser just nu — AI:n räknar ut din matchningspoäng automatiskt när du söker.
+          </p>
+        </div>
+        <JobSearchIllustration className="pointer-events-none absolute -right-6 -bottom-8 h-56 w-auto opacity-90 hidden sm:block" />
       </div>
 
       {/* Filters */}
@@ -119,7 +127,10 @@ export function JobsListClient({ jobs: initialJobs, userId }: { jobs: Job[]; use
               className="pl-9"
             />
           </div>
-          <Select value={workType} onValueChange={v => handleFilter(() => setWorkType(v ?? 'all'))}>
+          <Select
+            value={workType}
+            onValueChange={v => handleFilter(() => setWorkType(v ?? 'all'))}
+          >
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Arbetsform" />
             </SelectTrigger>
@@ -130,7 +141,10 @@ export function JobsListClient({ jobs: initialJobs, userId }: { jobs: Job[]; use
               <SelectItem value="on-site">På plats</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={sortBy} onValueChange={v => handleFilter(() => setSortBy(v ?? 'newest'))}>
+          <Select
+            value={sortBy}
+            onValueChange={v => handleFilter(() => setSortBy(v ?? 'newest'))}
+          >
             <SelectTrigger className="w-full sm:w-44">
               <SelectValue placeholder="Sortera" />
             </SelectTrigger>
@@ -173,7 +187,7 @@ export function JobsListClient({ jobs: initialJobs, userId }: { jobs: Job[]; use
       {/* Results */}
       {sorted.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground">
-          <Briefcase className="h-12 w-12 mx-auto mb-3 opacity-30" />
+          <JobSearchIllustration className="h-32 w-auto mx-auto mb-4 opacity-70" />
           {jobs.length === 0 ? (
             <>
               <p className="font-medium">Inga aktiva annonser just nu</p>
@@ -192,10 +206,18 @@ export function JobsListClient({ jobs: initialJobs, userId }: { jobs: Job[]; use
             const days = job.deadline ? daysLeft(job.deadline) : null
             const urgentDeadline = days !== null && days <= 3
 
+            const initials = (job.company_profile?.company_name ?? '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+
             return (
               <Card key={job.id} className="group hover:shadow-md transition-shadow">
                 <CardContent className="pt-5 pb-5">
                   <div className="flex items-start justify-between gap-4">
+                    <Avatar className="h-11 w-11 rounded-lg flex-shrink-0 border">
+                      <AvatarImage src={job.company_profile?.logo_url ?? ''} className="object-contain" />
+                      <AvatarFallback className="rounded-lg bg-muted text-muted-foreground text-sm">
+                        {job.company_profile ? initials : <Building2 className="h-4 w-4" />}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start gap-2 flex-wrap">
                         <Link href={`/seeker/jobs/${job.id}`} className="hover:underline flex-1 min-w-0">
