@@ -100,6 +100,8 @@ export interface Application {
   interview_questions: string[] | null
   cover_letter: string | null
   status: ApplicationStatus
+  first_matched_at: string | null
+  decided_at: string | null
   created_at: string
   updated_at: string
 }

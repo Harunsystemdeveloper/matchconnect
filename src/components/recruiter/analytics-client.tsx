@@ -10,7 +10,7 @@ import {
 } from 'recharts'
 import {
   TrendingUp, Users, Briefcase, Star, Eye, Clock,
-  CheckCircle2, XCircle, BarChart2
+  CheckCircle2, XCircle, BarChart2, Timer, Gauge, PiggyBank, Info
 } from 'lucide-react'
 
 interface Job {
@@ -26,8 +26,34 @@ interface Application {
   job_id: string
   status: string
   match_score: number | null
+  first_matched_at: string | null
+  decided_at: string | null
   created_at: string
   updated_at: string
+}
+
+interface TimeEvent {
+  application_id: string
+  created_at: string
+}
+
+/** Antagande använt i ROI-uppskattningen — allt annat i denna vy är faktiska mätvärden. */
+const ASSUMED_MANUAL_MINUTES_PER_CANDIDATE = 15
+
+function hoursBetween(a: string, b: string): number {
+  return (new Date(b).getTime() - new Date(a).getTime()) / (1000 * 60 * 60)
+}
+
+function avg(nums: number[]): number | null {
+  if (nums.length === 0) return null
+  return nums.reduce((s, n) => s + n, 0) / nums.length
+}
+
+function formatDuration(hours: number | null): string {
+  if (hours == null) return '—'
+  if (hours < 1) return `${Math.round(hours * 60)} min`
+  if (hours < 48) return `${hours.toFixed(1)} tim`
+  return `${(hours / 24).toFixed(1)} dagar`
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -50,10 +76,14 @@ export function RecruiterAnalyticsClient({
   jobs,
   applications,
   shortlistCount,
+  shortlistEvents = [],
+  interviewEvents = [],
 }: {
   jobs: Job[]
   applications: Application[]
   shortlistCount: number
+  shortlistEvents?: TimeEvent[]
+  interviewEvents?: TimeEvent[]
 }) {
   // Veckovis ansökningar (senaste 8 veckor)
   const weeklyData = useMemo(() => {
@@ -119,6 +149,42 @@ export function RecruiterAnalyticsClient({
       .slice(0, 5)
   }, [jobs, applications])
 
+  // ── Steg 4: Mätbara resultat & ROI ──
+  const appById = useMemo(() => new Map(applications.map(a => [a.id, a])), [applications])
+
+  const timeToFirstMatchHours = useMemo(() => avg(
+    applications.filter(a => a.first_matched_at).map(a => hoursBetween(a.created_at, a.first_matched_at!))
+  ), [applications])
+
+  const timeToShortlistHours = useMemo(() => avg(
+    shortlistEvents
+      .map(e => {
+        const app = appById.get(e.application_id)
+        return app ? hoursBetween(app.created_at, e.created_at) : null
+      })
+      .filter((h): h is number => h !== null)
+  ), [shortlistEvents, appById])
+
+  const timeToInterviewHours = useMemo(() => avg(
+    interviewEvents
+      .map(e => {
+        const app = appById.get(e.application_id)
+        return app ? hoursBetween(app.created_at, e.created_at) : null
+      })
+      .filter((h): h is number => h !== null)
+  ), [interviewEvents, appById])
+
+  const interviewedApplicationIds = useMemo(() => new Set(interviewEvents.map(e => e.application_id)), [interviewEvents])
+  const interviewRate = applications.length > 0 ? Math.round((interviewedApplicationIds.size / applications.length) * 100) : 0
+  const offerCount = applications.filter(a => a.status === 'accepted').length
+  const offerRate = applications.length > 0 ? Math.round((offerCount / applications.length) * 100) : 0
+
+  const avgScoreHired = avg(applications.filter(a => a.status === 'accepted' && a.match_score != null).map(a => a.match_score!))
+  const avgScoreNotHired = avg(applications.filter(a => a.status === 'rejected' && a.match_score != null).map(a => a.match_score!))
+
+  const matchedApplicationCount = applications.filter(a => a.match_score != null).length
+  const estimatedHoursSaved = Math.round((matchedApplicationCount * ASSUMED_MANUAL_MINUTES_PER_CANDIDATE) / 60 * 10) / 10
+
   // KPI-nyckeltal
   const totalApps = applications.length
   const acceptedApps = applications.filter(a => a.status === 'accepted').length
@@ -182,6 +248,109 @@ export function RecruiterAnalyticsClient({
           </CardContent>
         </Card>
       </div>
+
+      {/* Steg 4: Mätbara resultat */}
+      <div>
+        <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+          <Gauge className="h-5 w-5 text-primary" />
+          Mätbara resultat
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Tid till första matchning</CardTitle>
+              <Timer className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formatDuration(timeToFirstMatchHours)}</div>
+              <p className="text-xs text-muted-foreground">från ansökan till AI-poäng</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Tid till shortlist</CardTitle>
+              <Timer className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formatDuration(timeToShortlistHours)}</div>
+              <p className="text-xs text-muted-foreground">från ansökan till shortlist</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Går vidare till intervju</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{interviewRate}%</div>
+              <p className="text-xs text-muted-foreground">
+                {formatDuration(timeToInterviewHours)} i snitt till bokning
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Får erbjudande</CardTitle>
+              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{offerRate}%</div>
+              <p className="text-xs text-muted-foreground">{offerCount} av {totalApps} ansökningar</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Kvalitet: matchpoäng anställda vs ej anställda */}
+      {(avgScoreHired != null || avgScoreNotHired != null) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Star className="h-4 w-4 text-primary" />
+              Matchpoäng: anställda vs. ej anställda
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Om AI-matchningen faktiskt förutsäger utfall bör anställda kandidater i snitt ha haft högre poäng.
+            </p>
+            <div className="space-y-2">
+              <div>
+                <div className="flex items-center justify-between text-sm mb-1">
+                  <span>Anställda</span>
+                  <span className="font-semibold">{avgScoreHired != null ? `${Math.round(avgScoreHired)}%` : '—'}</span>
+                </div>
+                <Progress value={avgScoreHired ?? 0} className="h-2" />
+              </div>
+              <div>
+                <div className="flex items-center justify-between text-sm mb-1">
+                  <span>Ej anställda (avvisade)</span>
+                  <span className="font-semibold">{avgScoreNotHired != null ? `${Math.round(avgScoreNotHired)}%` : '—'}</span>
+                </div>
+                <Progress value={avgScoreNotHired ?? 0} className="h-2" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ROI-vy */}
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader>
+          <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <PiggyBank className="h-4 w-4 text-primary" />
+            Uppskattad tidsbesparing
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="text-3xl font-bold gradient-text">~{estimatedHoursSaved} timmar</div>
+          <p className="text-xs text-muted-foreground flex items-start gap-1.5">
+            <Info className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+            Uppskattning baserad på ett antagande: manuell CV-granskning tar ~{ASSUMED_MANUAL_MINUTES_PER_CANDIDATE} minuter per kandidat.
+            {' '}AI matchade {matchedApplicationCount} kandidater automatiskt, vilket sparade uppskattningsvis den tiden. Övriga siffror på denna sida är faktiska mätvärden, inte uppskattningar.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Grafer – rad 1 */}
       <div className="grid gap-6 lg:grid-cols-2">
