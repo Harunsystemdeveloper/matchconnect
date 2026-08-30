@@ -10,7 +10,7 @@ import {
 } from 'recharts'
 import {
   TrendingUp, Users, Briefcase, Star, Eye, Clock,
-  CheckCircle2, XCircle, BarChart2, Timer, Gauge, PiggyBank, Info
+  CheckCircle2, XCircle, BarChart2, Timer, Gauge, PiggyBank, Info, DollarSign
 } from 'lucide-react'
 
 interface Job {
@@ -34,6 +34,14 @@ interface Application {
 
 interface TimeEvent {
   application_id: string
+  created_at: string
+}
+
+interface AiCostLog {
+  model_id: string
+  input_tokens: number | null
+  output_tokens: number | null
+  estimated_cost_usd: number | null
   created_at: string
 }
 
@@ -78,12 +86,14 @@ export function RecruiterAnalyticsClient({
   shortlistCount,
   shortlistEvents = [],
   interviewEvents = [],
+  aiCostLogs = [],
 }: {
   jobs: Job[]
   applications: Application[]
   shortlistCount: number
   shortlistEvents?: TimeEvent[]
   interviewEvents?: TimeEvent[]
+  aiCostLogs?: AiCostLog[]
 }) {
   // Veckovis ansökningar (senaste 8 veckor)
   const weeklyData = useMemo(() => {
@@ -184,6 +194,12 @@ export function RecruiterAnalyticsClient({
 
   const matchedApplicationCount = applications.filter(a => a.match_score != null).length
   const estimatedHoursSaved = Math.round((matchedApplicationCount * ASSUMED_MANUAL_MINUTES_PER_CANDIDATE) / 60 * 10) / 10
+
+  // ── Steg 7: AI-kostnader ──
+  const totalAiCost = useMemo(() => aiCostLogs.reduce((s, l) => s + (l.estimated_cost_usd ?? 0), 0), [aiCostLogs])
+  const sonnetCalls = useMemo(() => aiCostLogs.filter(l => l.model_id.includes('sonnet')).length, [aiCostLogs])
+  const haikuCalls = useMemo(() => aiCostLogs.filter(l => l.model_id.includes('haiku')).length, [aiCostLogs])
+  const avgCostPerMatch = aiCostLogs.length > 0 ? totalAiCost / aiCostLogs.length : null
 
   // KPI-nyckeltal
   const totalApps = applications.length
@@ -351,6 +367,42 @@ export function RecruiterAnalyticsClient({
           </p>
         </CardContent>
       </Card>
+
+      {/* Steg 7: AI-kostnader (admin-vy över faktisk AI-spend) */}
+      {aiCostLogs.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-primary" />
+              AI-kostnader — dina matchningar
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div>
+                <p className="text-xl font-bold">${totalAiCost.toFixed(3)}</p>
+                <p className="text-xs text-muted-foreground">total kostnad (senaste 500)</p>
+              </div>
+              <div>
+                <p className="text-xl font-bold">${avgCostPerMatch != null ? avgCostPerMatch.toFixed(4) : '—'}</p>
+                <p className="text-xs text-muted-foreground">snitt per matchning</p>
+              </div>
+              <div>
+                <p className="text-xl font-bold">{sonnetCalls}</p>
+                <p className="text-xs text-muted-foreground">Sonnet-anrop (toppkandidater)</p>
+              </div>
+              <div>
+                <p className="text-xl font-bold">{haikuCalls}</p>
+                <p className="text-xs text-muted-foreground">Haiku-anrop (mittskikt, billigare)</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground flex items-start gap-1.5 border-t pt-2">
+              <Info className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+              Verklig kostnad baserad på faktisk token-användning per AI-anrop, inte en uppskattning. Kandidater under matchningströskeln och cachade omkörningar (oförändrat underlag) kostar ingenting alls och räknas inte in här.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Grafer – rad 1 */}
       <div className="grid gap-6 lg:grid-cols-2">

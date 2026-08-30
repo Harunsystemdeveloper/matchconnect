@@ -1,6 +1,7 @@
 
 import { createClient } from '@supabase/supabase-js'
 import type { AiDecisionType } from '@/types/database'
+import { estimateCostUsd, type Usage } from './pricing'
 
 // Uses service role to bypass RLS for logging — logs are read-only for users
 function getServiceClient() {
@@ -22,10 +23,15 @@ interface LogAiDecisionParams {
   inputSkills?: string[]
   outputSkillsMatched?: string[]
   outputSkillsMissing?: string[]
+  /** Vilken modell som faktiskt användes — default sonnet, ange 'claude-haiku-4-5-20251001' för lite-anrop. */
+  modelId?: string
+  /** Verklig token-usage från API-svaret (message.usage) — kostnad räknas ut därifrån, aldrig gissad. */
+  usage?: Usage
 }
 
 export async function logAiDecision(params: LogAiDecisionParams): Promise<void> {
   const supabase = getServiceClient()
+  const modelId = params.modelId ?? 'claude-sonnet-4-6'
 
   const { error } = await supabase.from('ai_decision_logs').insert({
     subject_user_id: params.subjectUserId ?? null,
@@ -39,7 +45,10 @@ export async function logAiDecision(params: LogAiDecisionParams): Promise<void> 
     input_skills: params.inputSkills ?? null,
     output_skills_matched: params.outputSkillsMatched ?? null,
     output_skills_missing: params.outputSkillsMissing ?? null,
-    model_id: 'claude-sonnet-4-6',
+    model_id: modelId,
+    input_tokens: params.usage?.input_tokens ?? null,
+    output_tokens: params.usage?.output_tokens ?? null,
+    estimated_cost_usd: params.usage ? estimateCostUsd(modelId, params.usage) : null,
   })
 
   // Logging must never crash the main flow — only log errors

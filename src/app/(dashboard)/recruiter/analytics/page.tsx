@@ -52,6 +52,15 @@ export default async function AnalyticsPage() {
         .in('application_id', applicationIds)
     : { data: [] }
 
+  // Steg 7: AI-kostnader — bara loggar den här rekryteraren själv utlöst (match_score-anrop).
+  const { data: aiCostLogs } = await supabase
+    .from('ai_decision_logs')
+    .select('model_id, input_tokens, output_tokens, estimated_cost_usd, created_at')
+    .eq('triggered_by_user_id', user.id)
+    .eq('decision_type', 'match_score')
+    .order('created_at', { ascending: false })
+    .limit(500)
+
   return (
     <RecruiterAnalyticsClient
       jobs={jobs ?? []}
@@ -59,6 +68,7 @@ export default async function AnalyticsPage() {
       shortlistCount={shortlistRows?.length ?? 0}
       shortlistEvents={shortlistRows ?? []}
       interviewEvents={interviewRows ?? []}
+      aiCostLogs={aiCostLogs ?? []}
     />
   )
 }

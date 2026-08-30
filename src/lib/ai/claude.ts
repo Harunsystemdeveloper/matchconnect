@@ -33,7 +33,8 @@ Regler:
   })
 
   const text = message.content[0].type === 'text' ? message.content[0].text : ''
-  return JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
+  const analysis = JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
+  return { analysis, usage: message.usage }
 }
 
 export async function matchCandidates(job: {
@@ -105,7 +106,61 @@ Sortera efter score (högst först). Svara ENDAST med JSON.`,
   })
 
   const text = message.content[0].type === 'text' ? message.content[0].text : ''
-  return JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
+  const parsed = JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
+  return { ...parsed, usage: message.usage }
+}
+
+/**
+ * Steg 7 -- kostnadsoptimerad "medium"-nivå av matchning: samma grundfrågeställning som
+ * matchCandidates() men med Haiku istället för Sonnet, och utan den fullständiga
+ * kategoriuppdelningen. Tänkt för det breda mittskiktet av kandidater (varken toppkandidater
+ * som motiverar Sonnets djupanalys, eller lågrelevanta som filtreras bort helt gratis).
+ */
+export async function matchCandidatesLite(job: {
+  title: string
+  description: string
+  skills_required: string[]
+  experience_level: string | null
+}, candidates: Array<{
+  id: string
+  full_name: string | null
+  cv_profile: { skills: string[] | null; experience_years: number | null; ai_summary: string | null } | null
+}>) {
+  const candidateList = candidates.map((c, i) => ({
+    index: i,
+    id: c.id,
+    name: c.full_name ?? 'Anonym',
+    skills: c.cv_profile?.skills ?? [],
+    experience_years: c.cv_profile?.experience_years ?? 0,
+    summary: c.cv_profile?.ai_summary ?? '',
+  }))
+
+  const message = await anthropic.messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 1200,
+    system: `Du är en rekryteringsanalytiker. Ge en snabb, rimlig matchningsbedömning (mindre djupgående än en fullständig analys).
+
+VIKTIGA REGLER:
+- "matching_skills" och "missing_skills" får ENDAST innehålla kompetenser från jobbets "Krav"-lista
+- Lägg ALDRIG till egna kompetenser som inte finns i Krav-listan
+
+Returnera ALLTID giltig JSON:
+{
+  "matches": [
+    { "candidate_id": "uuid", "score": 65, "summary": "Kort motivering (1 mening) på svenska", "matching_skills": ["skill1"], "missing_skills": ["skill2"] }
+  ]
+}
+
+Poängsättning 0-100, samma skala som en fullständig analys. Sortera efter score. Svara ENDAST med JSON.`,
+    messages: [{
+      role: 'user',
+      content: `Jobb: ${job.title}\nBeskrivning: ${job.description}\nKrav: ${job.skills_required?.join(', ')}\nNivå: ${job.experience_level ?? 'Ej angiven'}\n\nKandidater:\n${JSON.stringify(candidateList, null, 2)}`,
+    }],
+  })
+
+  const text = message.content[0].type === 'text' ? message.content[0].text : ''
+  const parsed = JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
+  return { ...parsed, usage: message.usage }
 }
 
 export async function analyzeSkillGaps(job: {
