@@ -16,7 +16,7 @@ export default async function NewJobPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Skapa jobbannons</h1>
-      <JobFormClient recruiterId={user.id} />
+      <JobFormClient />
     </div>
   )
 }

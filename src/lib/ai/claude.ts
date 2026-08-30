@@ -201,6 +201,48 @@ Return only valid JSON, no markdown.`,
   return JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
 }
 
+export interface CanonicalizedSkill {
+  raw: string
+  canonical_name: string
+  category: string
+}
+
+export async function canonicalizeSkills(
+  rawSkills: string[],
+  existingCanonicalNames: string[]
+): Promise<CanonicalizedSkill[]> {
+  const message = await anthropic.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 1500,
+    system: `Du är expert på att normalisera yrkeskompetenser till en kanonisk kompetensontologi som täcker alla branscher (IT, vård, ekonomi, pedagogik, bygg, handel, juridik m.fl.).
+
+VIKTIGA REGLER:
+- Om en inskickad kompetens är en ren stavnings-/formatvariant av en BEFINTLIG kanonisk kompetens (t.ex. "React.js" eller "ReactJS" är samma sak som "React") — återanvänd EXAKT det befintliga kanoniska namnet, teckenexakt.
+- Slå ALDRIG ihop två kompetenser som är genuint olika bara för att namnen liknar varandra. Exempel: "React" och "React Native" är OLIKA kompetenser (webb vs mobilramverk) — de ska ALDRIG få samma canonical_name. "Bokföring" och "Redovisning" är närliggande men olika — behåll dem separata om båda redan finns som egna kanoniska poster.
+- Om kompetensen inte matchar något befintligt — föreslå ett nytt kanoniskt namn med korrekt kapitalisering (t.ex. "React", "Node.js", "Patientvård"), inte versaler/gemener rakt av.
+- category ska vara exakt en av: "språk", "ramverk", "verktyg", "metodik", "certifiering", "mjuk kompetens", "domänkunskap", "övrigt"
+
+Befintliga kanoniska kompetenser i systemet just nu:
+${existingCanonicalNames.length > 0 ? existingCanonicalNames.join(', ') : '(inga registrerade än)'}
+
+Returnera ENDAST giltig JSON:
+{
+  "results": [
+    { "raw": "exakt den inskickade texten", "canonical_name": "Kanoniskt namn", "category": "kategori" }
+  ]
+}
+En rad per inskickad kompetens, i samma ordning som indata.`,
+    messages: [{
+      role: 'user',
+      content: `Normalisera dessa kompetenser:\n${rawSkills.map(s => `- ${s}`).join('\n')}`,
+    }],
+  })
+
+  const text = message.content[0].type === 'text' ? message.content[0].text : ''
+  const parsed = JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
+  return parsed.results
+}
+
 export async function summarizeInterviewFeedback(
   candidateName: string,
   scorecards: Array<{

@@ -13,7 +13,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Loader2, Plus, X, ChevronDown, ChevronUp } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 
 const schema = z.object({
@@ -105,7 +104,7 @@ const BENEFITS = [
   'Mobiltelefon / surfplatta',
 ]
 
-export function JobFormClient({ recruiterId }: { recruiterId: string }) {
+export function JobFormClient() {
   const [loading, setLoading] = useState(false)
   const [skills, setSkills] = useState<string[]>([])
   const [skillInput, setSkillInput] = useState('')
@@ -113,7 +112,6 @@ export function JobFormClient({ recruiterId }: { recruiterId: string }) {
   const [benefits, setBenefits] = useState<string[]>([])
   const [showBenefits, setShowBenefits] = useState(false)
   const router = useRouter()
-  const supabase = createClient()
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
@@ -147,29 +145,32 @@ export function JobFormClient({ recruiterId }: { recruiterId: string }) {
       ? ` (rörlig del: upp till ${data.variable_pct}%)`
       : ''
 
-    const { data: job, error } = await supabase.from('jobs').insert({
-      recruiter_id: recruiterId,
-      title: data.title,
-      description: data.description,
-      requirements: fullRequirements || null,
-      skills_required: skills,
-      location: data.location || null,
-      work_type: data.work_type || null,
-      experience_level: data.experience_level || null,
-      salary_min: data.salary_min ? parseInt(data.salary_min.replace(/\s/g, '')) : null,
-      salary_max: data.salary_max ? parseInt(data.salary_max.replace(/\s/g, '')) : null,
-      currency: salaryModel + variableNote,
-      deadline: data.deadline || null,
-      status: 'active',
-    }).select().single()
+    const res = await fetch('/api/jobs/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: data.title,
+        description: data.description,
+        requirements: fullRequirements || undefined,
+        skills_required: skills,
+        location: data.location || undefined,
+        work_type: data.work_type || undefined,
+        experience_level: data.experience_level || undefined,
+        salary_min: data.salary_min ? parseInt(data.salary_min.replace(/\s/g, '')) : undefined,
+        salary_max: data.salary_max ? parseInt(data.salary_max.replace(/\s/g, '')) : undefined,
+        currency: salaryModel + variableNote,
+        deadline: data.deadline || undefined,
+      }),
+    })
+    const result = await res.json()
 
-    if (error) {
-      toast.error('Kunde inte skapa annons', { description: error.message })
+    if (!res.ok) {
+      toast.error('Kunde inte skapa annons', { description: typeof result.error === 'string' ? result.error : undefined })
       setLoading(false)
       return
     }
     toast.success('Annons skapad!')
-    router.push(`/recruiter/jobs/${job.id}/candidates`)
+    router.push(`/recruiter/jobs/${result.job.id}/candidates`)
   }
 
   return (

@@ -64,23 +64,28 @@ export function JobEditClient({ job }: { job: Job }) {
 
   async function onSubmit(data: z.infer<typeof schema>) {
     setLoading(true)
-    const { error } = await supabase.from('jobs').update({
-      title: data.title,
-      description: data.description,
-      requirements: data.requirements || null,
-      skills_required: skills,
-      location: data.location || null,
-      work_type: data.work_type || null,
-      experience_level: data.experience_level || null,
-      status: data.status,
-      salary_min: data.salary_min ? parseInt(data.salary_min) : null,
-      salary_max: data.salary_max ? parseInt(data.salary_max) : null,
-      deadline: data.deadline || null,
-      updated_at: new Date().toISOString(),
-    }).eq('id', job.id)
+    const res = await fetch('/api/jobs/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        job_id: job.id,
+        title: data.title,
+        description: data.description,
+        requirements: data.requirements || undefined,
+        skills_required: skills,
+        location: data.location || undefined,
+        work_type: data.work_type || undefined,
+        experience_level: data.experience_level || undefined,
+        status: data.status,
+        salary_min: data.salary_min ? parseInt(data.salary_min) : undefined,
+        salary_max: data.salary_max ? parseInt(data.salary_max) : undefined,
+        deadline: data.deadline || undefined,
+      }),
+    })
+    const result = await res.json()
 
-    if (error) {
-      toast.error('Kunde inte spara', { description: error.message })
+    if (!res.ok) {
+      toast.error('Kunde inte spara', { description: typeof result.error === 'string' ? result.error : undefined })
     } else {
       toast.success('Annons uppdaterad!')
       router.push('/recruiter/jobs')
