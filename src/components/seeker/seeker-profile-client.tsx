@@ -151,7 +151,7 @@ export function SeekerProfileClient({ profile, cvProfile: initialCv }: { profile
     if (!cvProfile?.cv_url) return
     setCvDeleting(true)
     const ext = cvProfile.cv_url.split('.').pop()?.split('?')[0] ?? 'pdf'
-    await supabase.storage.from('cvs').remove([`cvs/${profile.id}.${ext}`])
+    await supabase.storage.from('cvs').remove([`${profile.id}/${profile.id}.${ext}`])
     await supabase.from('cv_profiles').update({
       cv_url: null,
       cv_text: null,
